@@ -1,8 +1,25 @@
 # sdl2-rpg-engine
-<p>This is a 2D cross-platform game engine built with SDL2</p>
+<p>This is (hopefully will be) a 2D cross-platform game engine built with SDL2.</p>
 <br>
-<p>It is still in very early development. To view the <i>roadmap</i> read todolist.txt</p>
-game engine made in SDL2 designed for RPGs
+<p>It is still in very early development. To view the <i>roadmap</i> read todolist.txt!</p>
 <br>
-<p>It is designed for top-down 2D RPGs.</p>
-<p>With structure inspired by ECS (entity component system) project structure.</p>
+<br>
+<p>
+Goals:
+<ul>
+    <li>Keep the code as easy to read and follow as possible (WIP!)</li>
+    <li>Make developing games EASY! (for myself at least)</li>
+    <li>Impliment a design that closely resembles the ECS (entity component system) structure!</li>
+    <li>Make a cool game using this engine</li>
+</ul>
+</p>
+<br>
+<br>
+<p>The project is being developed on MacOS with C++</p>
+<p>Setup (for mac):</p>
+<ul>
+    <li>Install SDL2, SDL2_image, SDL2_ttf via Homebrew! - <b>https://formulae.brew.sh/formula/sdl2</b></li>
+    <li>Run the <b>./dependencies/setup</b> bash script</li>
+    <li>Compile with the command: <b>cmake --build .</b> in same directory as <b>CMakeLists.txt</b></li>
+    <li>The executable gets outputted to the bin folder.</li>
+</ul>
