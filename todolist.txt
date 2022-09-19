@@ -1,0 +1,32 @@
+
+
+TODO
+
+    revamp view/camera system
+        - handle window events (size changes etc)
+    
+    revamp sprite system (consider using methods to simplify some object management)
+        - tilemaps *** look at tiled *** 
+        - animations
+
+
+    text system (similar to sprites? since they are textures too)
+
+    gameplay managers? 
+
+    audio (far in the future)
+
+    look into lua scripting
+
+    gameplay events?
+
+    saving/loading
+
+    inventory
+    
+    dialog
+
+    items / projectiles
+
+    action attacks
+
