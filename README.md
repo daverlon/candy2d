@@ -21,5 +21,5 @@ Goals:
     <li>Install SDL2, SDL2_image, SDL2_ttf via Homebrew! - <b>https://formulae.brew.sh/formula/sdl2</b></li>
     <li>Run the <b>./dependencies/setup</b> bash script</li>
     <li>Compile with the command: <b>cmake --build .</b> in same directory as <b>CMakeLists.txt</b></li>
-    <li>The executable gets outputted to the bin folder.</li>
+    <li>The executable gets outputted to the bin folder</li>
 </ul>
