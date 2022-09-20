@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
-set(CXX_FLAGS "-Verbose -Wc++11-extensions")
+set(CXX_FLAGS "-Verbose -Wc++11-extensions -std=c++17")
 
 set(EXECUTABLE_OUTPUT_PATH bin)
 

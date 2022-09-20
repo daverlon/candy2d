@@ -5,26 +5,26 @@
 #include "sprite.h"
 
 struct Camera {
-    Camera(SDL_Rect view, int zoom, Sprite* focus) {
-        this->view = view;
-        this->zoom = zoom;
-        this->focus = focus;
-    }
-    Camera(SDL_Rect view, int zoom) {
-        this->view = view;
-        this->zoom = zoom;
-    }
-    SDL_Rect view;
-    int zoom;
+    glm::vec2 position;
+    glm::vec2 view_size;
+    float zoom;
+    SDL_Rect inner_margin;
 
-    Sprite* focus;
+    Camera(glm::vec2 position, glm::vec2 view_size, float zoom) {
+        this->position = position;
+        this->view_size = view_size;
+        this->zoom = zoom;
+    }
 };
 
 
 extern void MoveCamera(Camera* cam, int x, int y);
 
-extern void SetCameraFocus(Camera* cam, Sprite* spr);
 
 extern void DestroyCamera(Camera* cam);
 
-extern void SetCameraPosition(Camera *cam, int x, int y);
+extern void SetCameraPosition(Camera *cam, glm::vec2 size);
+
+extern void SetCameraViewSize(Camera *cam, glm::vec2 size);
+
+extern void SlowlyMoveCamera(Camera *cam, glm::vec2 targetPos, float speed);

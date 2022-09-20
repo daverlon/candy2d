@@ -1,15 +1,22 @@
 #include "sprite.h"
 
 
-void SetSpriteOrigin(Sprite* spr, int x, int y) {
-    spr->origin_x = x;
-    spr->origin_y = y;
+
+
+
+void SetSpriteOrigin(Sprite* spr, glm::vec2 origin) {
+    spr->origin = origin;
 }
 
 
-void MoveSprite(Sprite *spr, int x, int y) {
-    spr->img_pos.x += x;
-    spr->img_pos.y += y;
+void MoveSprite(Sprite *spr, glm::vec2 pos) {
+    spr->position.x += pos.x;
+    spr->position.y += pos.y;
+}
+
+void SetSpritePosition(Sprite *spr, glm::vec2 pos) {
+    spr->position.x = pos.x;
+    spr->position.y = pos.y;
 }
 
 
