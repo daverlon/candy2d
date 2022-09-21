@@ -50,6 +50,7 @@ void DestroySprite(std::vector<Sprite*>* sprites, int index) {
     std::cout << "Deleting sprite at index " << index << "." << std::endl;
     std::cout << " >>> Sprite vector size (before): " << sprites->size() << "." << std::endl;
     auto a = &*(*sprites)[index];
+    SDL_DestroyTexture(a->texture);
     delete a;
     sprites->erase(sprites->begin() + index);
     std::cout << " >>> Sprite vector size (after):  " << sprites->size() << "." << std::endl;
