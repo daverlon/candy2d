@@ -1,60 +1,103 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <format>
-#include <algorithm>
 
+#include "stdafx.h"
 
+#include "gamemath.h"
 
+#include "debugutils.h"
+#include "viewport.h"
 #include "sprite.h"
 #include "camera.h"
-
-
-
 #include "time.h"
 
-_Time Time;
 
+// global
 
-void ShowError(std::string msg) {
-    std::cout << msg << std::endl;
-    std::cout << SDL_GetError() << std::endl;
+namespace g {
+    Time time;
+    ViewPort viewport; // screen (window)
+    Camera camera; // world camera
+
+    // reference to window created in main
+    SDL_Window* window = nullptr;
+
+    // global renderer (reference to renderer created in main)
+    SDL_Renderer* renderer = nullptr; 
+
+    glm::ivec2 window_size = glm::ivec2(0,0);
 }
 
-void PrintVec2(glm::vec2 v) {
-    std::cout << "(" << v.x << "," << v.y << ")" << std::endl;
-}
 
+bool InitSDL2() {
+    std::cout << "Hello, World!" << std::endl;
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+        ShowError("Failed to initialize SDL.");
+        return false;
+    }
+    if (TTF_Init() < 0) {
+        ShowError("Failed to initialize SDL_TTF.");
+        return false;
+    }
+    if (IMG_Init(IMG_INIT_PNG) < 0) {
+        ShowError("Failed to initialize SDL_IMG.");
+        return false;
+    }
 
-
-
-
-int main() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)  ShowError("Failed to initialize SDL.");
-    if (TTF_Init() < 0)                     ShowError("Failed to initialize SDL_TTF.");
-    if (IMG_Init(IMG_INIT_PNG) < 0)         ShowError("Failed to initialize SDL_IMG.");
-
-    SDL_Window* window = SDL_CreateWindow(
+    SDL_Window* _window = SDL_CreateWindow(
         "Game window", 
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         800, 800,
         SDL_WINDOW_RESIZABLE
     );
-    if (!window) ShowError("Failed to create SDL_Window.");
+    if (!_window) {
+        ShowError("Failed to create SDL_Window.");
+        return false;
+    }
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(
-        window, 
+    SDL_Renderer* _renderer = SDL_CreateRenderer(
+        _window,
         -1, 
-        SDL_RENDERER_PRESENTVSYNC
+        SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED
     );
-    if (!renderer) ShowError("Failed to create SDL_Renderer.");
+    if (!_renderer) {
+        ShowError("Failed to create SDL_Renderer.");
+        return false;
+    }
 
-    int window_width = 0;
-    int window_height = 0;
-    SDL_GetWindowSize(window, &window_width, &window_height);
+    // set global vars
+    g::window = _window;
+    g::renderer = _renderer;
+
+    SDL_GetWindowSize(g::window, &g::window_size.x, &g::window_size.y);
+    std::cout << "Window Size: " << Vec2toString(g::window_size) << std::endl;
+}
+
+void DestroySDL2() {
+    std::cout << "Cleanup SDL2..." << std::endl;
+    SDL_DestroyWindow(g::window);
+    SDL_DestroyRenderer(g::renderer);
+    IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
+}
 
 
-    Camera* cam = new Camera(glm::vec2(0,0), glm::vec2(window_width, window_height), 4);
+int main() {
+
+    InitSDL2();
+
+    // init viewport
+    g::viewport.position = glm::vec2(0,0);
+    g::viewport.size = glm::vec2(g::window_size.x, g::window_size.y);
+
+
+
+
+    g::camera.position = glm::vec2(0,0);
+    g::camera.size = glm::vec2(g::window_size.x, g::window_size.y);
+    g::camera.zoom = 4.0f;
+
+    
+
 
     Sprite* playerSprite;
     Sprite* enemySprite;
@@ -62,11 +105,9 @@ int main() {
     std::vector<Sprite*> sprites;
 
 
-
-
     sprites.push_back(
         new Sprite(
-            CTFS(renderer, IMG_Load("res/img/grass.png")),
+            CTFS(g::renderer, IMG_Load("res/img/grass.png")),
             (SDL_Rect){0,0,32,32},
             glm::vec2(0.0f,0.0f))
     );
@@ -75,10 +116,11 @@ int main() {
 
 
 
-
+    // todo: load texture without surface
+    // CTFS = BAD!
     sprites.push_back(
         new Sprite(
-            CTFS(renderer, IMG_Load("res/img/dinoman-blue.png")),
+            CTFS(g::renderer, IMG_Load("res/img/dinoman-blue.png")),
             (SDL_Rect){0,0,24,24},
             glm::vec2(12.0f,12.0f))
     );
@@ -86,12 +128,11 @@ int main() {
 
     sprites.push_back(
         new Sprite(
-            CTFS(renderer, IMG_Load("res/img/dinoman-yellow.png")),
+            CTFS(g::renderer, IMG_Load("res/img/dinoman-yellow.png")),
             (SDL_Rect){0,0,24,24},
             glm::vec2(12.0f,12.0f))
     );
     playerSprite = sprites[sprites.size()-1]; // create copy (nice)
-
 
 
     std::cout << "Number of sprites in vector: " << sprites.size() << std::endl;
@@ -102,33 +143,30 @@ int main() {
 
     MoveSprite(playerSprite, glm::vec2(200, 200));
     MoveSprite(enemySprite, glm::vec2(300, 300));
-
     MoveSprite(grassSprite, glm::vec2(0,0));
 
     //SDL_Texture* tx_target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 800, 800);
 
-    SetCameraPosition(cam, playerSprite->position);
-
-    int margin = 250;
-    float camspeed = 5.0f;
+    SetCameraPosition(&g::camera, playerSprite->position);
 
     bool run = true;
     while (run) {
-        Time.UpdateFirst(SDL_GetTicks());
+        g::time.UpdateFirst(SDL_GetTicks());
+
+        SDL_GetMouseState(&g::viewport.mouse_position.x, &g::viewport.mouse_position.y);
+        //std::cout << "Mouse Pos: " << Vec2toString(g::viewport.mouse_position) << std::endl;
 
         const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
 
-        if (keyboard_state[SDL_SCANCODE_DOWN])  MoveSprite(playerSprite, glm::vec2(0, -movespeed*Time.DeltaTime()));
-        if (keyboard_state[SDL_SCANCODE_UP])    MoveSprite(playerSprite, glm::vec2(0, movespeed*Time.DeltaTime()));
-        if (keyboard_state[SDL_SCANCODE_LEFT])  MoveSprite(playerSprite, glm::vec2(movespeed*Time.DeltaTime(), 0));
-        if (keyboard_state[SDL_SCANCODE_RIGHT]) MoveSprite(playerSprite, glm::vec2(-movespeed*Time.DeltaTime(), 0));
+        if (keyboard_state[SDL_SCANCODE_DOWN])  MoveSprite(playerSprite, glm::vec2(0, -movespeed*g::time.DeltaTime()));
+        if (keyboard_state[SDL_SCANCODE_UP])    MoveSprite(playerSprite, glm::vec2(0, movespeed*g::time.DeltaTime()));
+        if (keyboard_state[SDL_SCANCODE_LEFT])  MoveSprite(playerSprite, glm::vec2(movespeed*g::time.DeltaTime(), 0));
+        if (keyboard_state[SDL_SCANCODE_RIGHT]) MoveSprite(playerSprite, glm::vec2(-movespeed*g::time.DeltaTime(), 0));
 
-
-        if (keyboard_state[SDL_SCANCODE_S]) MoveSprite(enemySprite, glm::vec2(0, -movespeed*Time.DeltaTime()));
-        if (keyboard_state[SDL_SCANCODE_W]) MoveSprite(enemySprite, glm::vec2(0, movespeed*Time.DeltaTime()));
-        if (keyboard_state[SDL_SCANCODE_A]) MoveSprite(enemySprite, glm::vec2(movespeed*Time.DeltaTime(), 0));
-        if (keyboard_state[SDL_SCANCODE_D]) MoveSprite(enemySprite, glm::vec2(-movespeed*Time.DeltaTime(), 0));
-
+        if (keyboard_state[SDL_SCANCODE_S]) MoveSprite(enemySprite, glm::vec2(0, -movespeed*g::time.DeltaTime()));
+        if (keyboard_state[SDL_SCANCODE_W]) MoveSprite(enemySprite, glm::vec2(0, movespeed*g::time.DeltaTime()));
+        if (keyboard_state[SDL_SCANCODE_A]) MoveSprite(enemySprite, glm::vec2(movespeed*g::time.DeltaTime(), 0));
+        if (keyboard_state[SDL_SCANCODE_D]) MoveSprite(enemySprite, glm::vec2(-movespeed*g::time.DeltaTime(), 0));
 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -141,97 +179,64 @@ int main() {
         }
 
 
+
+
+
         // center of camera
-        glm::vec2 cam_origin = cam->position + (cam->view_size/2.0f);
+        SlowlyMoveCamera(&g::camera, playerSprite->position, 20.0f*g::time.DeltaTime());
+        glm::vec2 cam_origin = g::camera.position + (g::camera.size/2.0f);
+        // std::cout << "enemySprite->position:  " << Vec2toString(enemySprite->position) << std::endl;
+        // std::cout << "playerSprite->position: " << Vec2toString(playerSprite->position) << std::endl;
 
 
-
-        SDL_Rect player_screen_rect = (SDL_Rect){
-            cam_origin.x - playerSprite->position.x + playerSprite->origin.x*cam->zoom,
-            cam_origin.x - playerSprite->position.y + playerSprite->origin.y*cam->zoom,
-            playerSprite->src_rect.w*cam->zoom,
-            playerSprite->src_rect.h*cam->zoom
-        };
-
-
-        if (player_screen_rect.x < margin) MoveCamera(cam, 5.0f, 0.0f);
-        if (player_screen_rect.x-player_screen_rect.w > cam->view_size.x-margin) MoveCamera(cam, -5.0f, 0.0f);
-
-        if (player_screen_rect.y < margin) MoveCamera(cam, 0.0f, 5.0f);
-        //if (player_screen_rect.y-player_screen_rect.h > cam->view_size.y-margin) MoveCamera(cam, 0.0f, 5.0f);
-
-
-        SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-        SDL_RenderClear(renderer);
-
-
-
-
-        std::cout << " enemySprite->position: (" << enemySprite->position.x << "," << enemySprite->position.y << ")" << std::endl;
-        std::cout << "playerSprite->position: (" << playerSprite->position.x << "," << playerSprite->position.y << ")" << std::endl;
-
-
-
+        SDL_SetRenderDrawColor(g::renderer, 100, 100, 100, 255);
+        SDL_RenderClear(g::renderer);
 
         for (auto &spr : sprites) {
 
-            glm::vec2 adjPos;
-            adjPos = spr->position + spr->origin*cam->zoom;
+            glm::vec2 on_screen_position = WorldToScreen(spr, &g::viewport, &g::camera);
 
-            SDL_Rect sprite_screen_rect = (SDL_Rect){
-                cam_origin.x - adjPos.x,
-                cam_origin.y - adjPos.y,
-                spr->src_rect.w*cam->zoom,
-                spr->src_rect.h*cam->zoom
+
+
+            glm::vec2 on_screen_size = glm::vec2(0.0f, 0.0f);
+            on_screen_size += glm::vec2(spr->src_rect.w, spr->src_rect.h);
+            on_screen_size *= g::camera.zoom;
+
+
+            SDL_Rect on_screen_rect = (SDL_Rect) {
+                on_screen_position.x, on_screen_position.y,
+                on_screen_size.x, on_screen_size.y
             };
 
-            SDL_RenderCopy(renderer, spr->texture, &spr->src_rect, &sprite_screen_rect);
+            SDL_RenderCopy(g::renderer, spr->texture, &spr->src_rect, &on_screen_rect);
 
-
-
-            // debug lines
-
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            SDL_RenderDrawRect(renderer, &sprite_screen_rect);
+            // debug lines -------------------------------------------
+            SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
+            SDL_RenderDrawRect(g::renderer, &on_screen_rect);
 
             int a = 10;
             SDL_Rect spr_origin_rect = (SDL_Rect) {
-                sprite_screen_rect.x + (spr->origin.x*cam->zoom) - (a/2),
-                sprite_screen_rect.y + (spr->origin.y*cam->zoom) - (a/2),
+                on_screen_rect.x + (spr->origin.x*g::camera.zoom) - (a/2),
+                on_screen_rect.y + (spr->origin.y*g::camera.zoom) - (a/2),
                 a,a
             };
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            SDL_RenderFillRect(renderer, &spr_origin_rect);
-
-
+            SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
+            SDL_RenderFillRect(g::renderer, &spr_origin_rect);
         }
 
+        SDL_RenderPresent(g::renderer);
 
-        //SDL_SetRenderTarget(renderer, NULL);
-        // SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-        // SDL_RenderClear(renderer);
+        std::string debug_title = std::to_string(g::time.DeltaTime()) + ", " + std::to_string(g::time.FPS());
+        SDL_SetWindowTitle(g::window, debug_title.c_str());
 
-
-        //SDL_RenderCopy(renderer, tx_target, NULL, NULL);
-
-        SDL_RenderPresent(renderer);
-
-
-        Time.UpdateLast(SDL_GetTicks());
-
-        std::string debug_title = std::to_string(Time.DeltaTime()) + ", " + std::to_string(Time.FPS());
-        SDL_SetWindowTitle(window, debug_title.c_str());
+        g::time.UpdateLast(SDL_GetTicks());
     }
     std::cout << std::endl << "Main loop ended." << std::endl;
 
-    DestroyCamera(cam);
+
     DestroyAllSprites(&sprites);
 
-    std::cout << "Cleanup SDL2..." << std::endl;
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    IMG_Quit();
-    TTF_Quit();
-    SDL_Quit();
+    DestroySDL2();
+
     return 0;
 }

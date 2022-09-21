@@ -1,6 +1,6 @@
 #pragma once
 
-class _Time {
+class Time {
     private:
         float dt;
         int prev;
@@ -11,4 +11,6 @@ class _Time {
         void UpdateLast(int t)  { dt = float(t-prev) / 1000.0f; }
 };
 
-extern _Time Time;
+namespace g {
+    extern Time time;
+}

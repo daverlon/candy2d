@@ -15,16 +15,16 @@ void SetCameraPosition(Camera *cam, glm::vec2 position) {
 }
 
 void SetCameraViewSize(Camera *cam, glm::vec2 size) {
-    cam->view_size = size;
+    cam->size = size;
 }
 
 
 void SlowlyMoveCamera(Camera *cam, glm::vec2 targetPos, float speed=5.0f) {
 
     glm::vec2 delta = targetPos - cam->position;
-    std::cout << "delta: ";
-    PrintVec2(delta);
+    //std::cout << "delta: " << Vec2toString(delta) << std::endl;
     cam->position.x += delta.x*speed;
     cam->position.y += delta.y*speed;
-    PrintVec2(cam->position);
+    //std::cout << "delta: " << Vec2toString(cam->position) << std::endl;
 }
+

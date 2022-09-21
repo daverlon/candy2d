@@ -1,21 +1,19 @@
 #pragma once
 
-#include "sdl2sdk.h"
+#include "stdafx.h"
 
 #include "sprite.h"
 
 struct Camera {
-    glm::vec2 position;
-    glm::vec2 view_size;
+    glm::vec2 position = glm::vec2(0,0);
+    glm::vec2 size = glm::vec2(0,0);
     float zoom;
-    SDL_Rect inner_margin;
-
-    Camera(glm::vec2 position, glm::vec2 view_size, float zoom) {
-        this->position = position;
-        this->view_size = view_size;
-        this->zoom = zoom;
-    }
 };
+
+
+namespace g {
+    extern Camera camera;
+}
 
 
 extern void MoveCamera(Camera* cam, int x, int y);

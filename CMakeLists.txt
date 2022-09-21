@@ -20,6 +20,10 @@ project(sdl2_game)
 
 file(GLOB SOURCES
     "src/main.cpp"
+    "src/debugutils.cpp"
+    "src/gamemath.cpp"
+
+    "src/viewport.cpp"
     "src/sprite.cpp"
     "src/camera.cpp"
 )

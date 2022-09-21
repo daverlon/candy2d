@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sdl2sdk.h"
+#include "stdafx.h"
 
 #include <iostream>
 #include <vector>
