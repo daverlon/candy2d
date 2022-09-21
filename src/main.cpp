@@ -86,7 +86,7 @@ void DestroySDL2() {
 // todo: 16:9 ratios
 void CorrectViewPortSize() {
     SDL_GetWindowSize(g::window, &g::window_size.x, &g::window_size.y);
-    std::cout << "New window size: " << Vec2toString(g::window_size) << std::endl;
+    //std::cout << "New window size: " << Vec2toString(g::window_size) << std::endl;
     if (g::window_size.x > g::window_size.y) {
         g::viewport.size = glm::ivec2(g::window_size.y, g::window_size.y);
         g::viewport.position.x = (g::window_size.x/2) - (g::viewport.size.x/2);
@@ -99,6 +99,15 @@ void CorrectViewPortSize() {
         g::viewport.position.x = 0;
         g::camera.size = g::viewport.size;
     }
+}
+
+void UpdateMousePosition(ViewPort &v) {
+    glm::ivec2 mouse_position_buffer = glm::ivec2(0,0);
+    SDL_GetMouseState(&mouse_position_buffer.x, &mouse_position_buffer.y);
+    SDL_Rect bounds = Vec2Vec2toRect(g::viewport.position, g::viewport.size);
+    ClampVec2(&mouse_position_buffer, &bounds);
+    g::viewport.mouse_position = mouse_position_buffer;
+    g::viewport.mouse_position -= g::viewport.position;
 }
 
 
@@ -184,16 +193,7 @@ int main() {
         );
 
 
-        glm::ivec2 mouse_position_buffer = glm::ivec2(0,0);
-        SDL_GetMouseState(&mouse_position_buffer.x, &mouse_position_buffer.y);
-
-        SDL_Rect bounds = Vec2Vec2toRect(g::viewport.position, g::viewport.size);
-        //ClampVec2(&mouse_position_buffer, &bounds);
-
-        g::viewport.mouse_position = mouse_position_buffer;
-        g::viewport.mouse_position -= g::viewport.position;
-
-
+        UpdateMousePosition(g::viewport);
         //std::cout << "Mouse world pos: " << Vec2toString(ScreenToWorld(g::viewport.mouse_position, g::viewport, g::camera)) << std::endl;;
 
 
