@@ -145,9 +145,17 @@ int main() {
     MoveSprite(enemySprite, glm::vec2(300, 300));
     MoveSprite(grassSprite, glm::vec2(0,0));
 
-    //SDL_Texture* tx_target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 800, 800);
 
     SetCameraPosition(&g::camera, playerSprite->position);
+
+
+     SDL_Texture* viewport_texture = SDL_CreateTexture(
+            g::renderer, 
+            SDL_PIXELFORMAT_RGBA8888, 
+            SDL_TEXTUREACCESS_TARGET, 
+            g::viewport.size.x, 
+            g::viewport.size.y
+        );
 
     bool run = true;
     while (run) {
@@ -189,14 +197,17 @@ int main() {
         // std::cout << "playerSprite->position: " << Vec2toString(playerSprite->position) << std::endl;
 
 
+
+   
+        SDL_SetRenderTarget(g::renderer, viewport_texture);
+
+        // clear viewport_texture
         SDL_SetRenderDrawColor(g::renderer, 100, 100, 100, 255);
         SDL_RenderClear(g::renderer);
 
         for (auto &spr : sprites) {
 
             glm::vec2 on_screen_position = WorldToScreen(spr, &g::viewport, &g::camera);
-
-
 
             glm::vec2 on_screen_size = glm::vec2(0.0f, 0.0f);
             on_screen_size += glm::vec2(spr->src_rect.w, spr->src_rect.h);
@@ -208,12 +219,12 @@ int main() {
                 on_screen_size.x, on_screen_size.y
             };
 
+            //SDL_RenderCopy(g::renderer, viewport_texture, &spr->src_rect, &on_screen_rect);
             SDL_RenderCopy(g::renderer, spr->texture, &spr->src_rect, &on_screen_rect);
 
             // debug lines -------------------------------------------
-            SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
+            /*SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
             SDL_RenderDrawRect(g::renderer, &on_screen_rect);
-
             int a = 10;
             SDL_Rect spr_origin_rect = (SDL_Rect) {
                 on_screen_rect.x + (spr->origin.x*g::camera.zoom) - (a/2),
@@ -221,10 +232,24 @@ int main() {
                 a,a
             };
             SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
-            SDL_RenderFillRect(g::renderer, &spr_origin_rect);
+            SDL_RenderFillRect(g::renderer, &spr_origin_rect);*/
         }
 
+        SDL_SetRenderTarget(g::renderer, NULL);
+
+        SDL_Rect viewport_rect = (SDL_Rect){
+            g::viewport.position.x, 
+            g::viewport.position.y, 
+            g::viewport.size.x, 
+            g::viewport.size.y
+        };
+
+        SDL_RenderCopy(g::renderer, viewport_texture, NULL, &viewport_rect);
+
         SDL_RenderPresent(g::renderer);
+
+        SDL_SetRenderDrawColor(g::renderer, 0, 0, 0, 255);
+        SDL_RenderClear(g::renderer);
 
         std::string debug_title = std::to_string(g::time.DeltaTime()) + ", " + std::to_string(g::time.FPS());
         SDL_SetWindowTitle(g::window, debug_title.c_str());
