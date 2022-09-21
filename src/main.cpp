@@ -194,7 +194,7 @@ int main() {
         g::viewport.mouse_position -= g::viewport.position;
 
 
-        std::cout << "Mouse world pos: " << Vec2toString(ScreenToWorld(g::viewport.mouse_position, g::viewport, g::camera)) << std::endl;;
+        //std::cout << "Mouse world pos: " << Vec2toString(ScreenToWorld(g::viewport.mouse_position, g::viewport, g::camera)) << std::endl;;
 
 
         const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
@@ -257,23 +257,20 @@ int main() {
             on_screen_size += glm::vec2(spr->src_rect.w, spr->src_rect.h);
             on_screen_size *= g::camera.zoom;
 
-
-            SDL_Rect on_screen_rect = (SDL_Rect) {
-                on_screen_position.x, on_screen_position.y,
-                on_screen_size.x, on_screen_size.y
-            };
+            SDL_Rect on_screen_rect = Vec2Vec2toRect(on_screen_position, on_screen_size);
 
             SDL_RenderCopy(g::renderer, spr->texture, &spr->src_rect, &on_screen_rect);
+
 
             // debug lines -------------------------------------------
             SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
             SDL_RenderDrawRect(g::renderer, &on_screen_rect);
             int a = 10;
-            SDL_Rect spr_origin_rect = (SDL_Rect) {
-                on_screen_rect.x + (spr->origin.x*g::camera.zoom) - (a/2),
-                on_screen_rect.y + (spr->origin.y*g::camera.zoom) - (a/2),
-                a,a
-            };
+            SDL_Rect spr_origin_rect = Vec2Vec2toRect(
+                on_screen_position + (spr->origin * g::camera.zoom),
+                glm::ivec2(a,a)
+            );
+            spr_origin_rect.x -= a/2; spr_origin_rect.y -= a/2;
             SDL_RenderFillRect(g::renderer, &spr_origin_rect);
         }
 
