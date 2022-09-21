@@ -10,6 +10,7 @@
 #include "time.h"
 
 
+// todo: reconsider global vars
 // global
 namespace g {
     Time time;
