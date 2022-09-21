@@ -36,6 +36,7 @@ void DestroyAllSprites(std::vector<Sprite*> *sprites) {
     std::cout << "Deleting every sprite in vector." << std::endl;
     std::cout << " >>> Sprite vector size (before): " << sprites->size() << "." << std::endl;
     for (auto &a : *sprites) {
+        SDL_DestroyTexture(a->texture);
         delete a;
     }
     sprites->clear();
