@@ -17,7 +17,6 @@ struct Sprite {
     SDL_Rect src_rect;
     glm::vec2 position;
     glm::vec2 origin;
-
 };
 
 

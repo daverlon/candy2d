@@ -11,7 +11,6 @@
 
 
 // global
-
 namespace g {
     Time time;
     ViewPort viewport; // screen (window)
@@ -42,6 +41,8 @@ bool InitSDL2() {
         return false;
     }
 
+    SDL_SetHint("SDL_RENDER_BATCHING", "1");
+
     SDL_Window* _window = SDL_CreateWindow(
         "Game window", 
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -55,7 +56,7 @@ bool InitSDL2() {
 
     SDL_Renderer* _renderer = SDL_CreateRenderer(
         _window,
-        -1, 
+        -1,
         SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED
     );
     if (!_renderer) {
@@ -80,6 +81,8 @@ void DestroySDL2() {
     SDL_Quit();
 }
 
+// only supports 1:1 ratio
+// todo: 16:9 ratios
 void CorrectViewPortSize() {
     SDL_GetWindowSize(g::window, &g::window_size.x, &g::window_size.y);
     if (g::window_size.x > g::window_size.y) {
@@ -107,7 +110,7 @@ int main() {
     g::camera.position = glm::vec2(0,0); // camera position (in the world)
     g::camera.size = glm::vec2(g::window_size.x, g::window_size.y); // camera size
     g::camera.origin = glm::vec2(g::viewport.position.x + (g::window_size.x/2), g::viewport.position.y + (g::window_size.y/2));
-    g::camera.zoom = 4.0f;
+    g::camera.zoom = 3.0f;
 
     
     CorrectViewPortSize();
@@ -121,7 +124,7 @@ int main() {
 
     sprites.push_back(
         new Sprite(
-            CTFS(g::renderer, IMG_Load("res/img/grass.png")),
+            IMG_LoadTexture(g::renderer, "res/img/grass.png"),
             (SDL_Rect){0,0,32,32},
             glm::vec2(0.0f,0.0f))
     );
@@ -134,7 +137,7 @@ int main() {
     // CTFS = BAD!
     sprites.push_back(
         new Sprite(
-            CTFS(g::renderer, IMG_Load("res/img/dinoman-blue.png")),
+            IMG_LoadTexture(g::renderer, "res/img/dinoman-blue.png"),
             (SDL_Rect){0,0,24,24},
             glm::vec2(12.0f,12.0f))
     );
@@ -142,7 +145,7 @@ int main() {
 
     sprites.push_back(
         new Sprite(
-            CTFS(g::renderer, IMG_Load("res/img/dinoman-yellow.png")),
+            IMG_LoadTexture(g::renderer, "res/img/dinoman-yellow.png"),
             (SDL_Rect){0,0,24,24},
             glm::vec2(12.0f,12.0f))
     );
@@ -163,7 +166,13 @@ int main() {
     SetCameraPosition(&g::camera, playerSprite->position);
 
 
-     SDL_Texture* viewport_texture = SDL_CreateTexture(
+
+    bool run = true;
+    while (run) {
+        g::time.UpdateFirst(SDL_GetTicks());
+
+
+        SDL_Texture* viewport_texture = SDL_CreateTexture(
             g::renderer, 
             SDL_PIXELFORMAT_RGBA8888, 
             SDL_TEXTUREACCESS_TARGET, 
@@ -171,13 +180,10 @@ int main() {
             g::viewport.size.y
         );
 
-    bool run = true;
-    while (run) {
-        g::time.UpdateFirst(SDL_GetTicks());
 
         SDL_GetMouseState(&g::viewport.mouse_position.x, &g::viewport.mouse_position.y);
         g::viewport.mouse_position -= g::viewport.position;
-        //std::cout << "Mouse Pos: " << Vec2toString(g::viewport.mouse_position) << std::endl;
+
 
         const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
 
@@ -196,7 +202,11 @@ int main() {
             if (event.type == SDL_WINDOWEVENT) {
                 if (event.window.event == SDL_WINDOWEVENT_CLOSE) run = false;
 
-                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                if (event.window.event == 
+                        SDL_WINDOWEVENT_RESIZED
+                        || SDL_WINDOWEVENT_RESTORED 
+                        || SDL_WINDOWEVENT_MAXIMIZED
+                        || SDL_WINDOWEVENT_SIZE_CHANGED) {
                     CorrectViewPortSize();
                 }
             }
@@ -207,28 +217,20 @@ int main() {
         }
 
 
-
-
-
-        // center of camera
-
-        glm::vec2 pos = WorldToScreen(&playerSprite->position, &g::viewport, &g::camera);
-        //SetCameraPosition(&g::camera, playerSprite->position);
         SlowlyMoveCamera(&g::camera, playerSprite->position, 6.0f*g::time.DeltaTime());
-        // SetCameraPosition(&g::camera, playerSprite->position);
-        // std::cout << "enemySprite->position:  " << Vec2toString(pos) << std::endl;
-
-        //std::cout << "playerSprite->position: " << Vec2toString(pos) << std::endl;
 
 
+        // clear the window texture
+        SDL_SetRenderDrawColor(g::renderer, 0, 0, 0, 255);
+        SDL_RenderClear(g::renderer);
 
    
         SDL_SetRenderTarget(g::renderer, viewport_texture);
-
         // clear viewport_texture
         SDL_SetRenderDrawColor(g::renderer, 100, 100, 100, 255);
         SDL_RenderClear(g::renderer);
 
+        // send sprites to viewport texture
         for (auto &spr : sprites) {
 
             glm::vec2 on_screen_position = WorldToScreen(spr, &g::viewport, &g::camera);
@@ -243,11 +245,10 @@ int main() {
                 on_screen_size.x, on_screen_size.y
             };
 
-            //SDL_RenderCopy(g::renderer, viewport_texture, &spr->src_rect, &on_screen_rect);
             SDL_RenderCopy(g::renderer, spr->texture, &spr->src_rect, &on_screen_rect);
 
             // debug lines -------------------------------------------
-            /*SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
+            SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
             SDL_RenderDrawRect(g::renderer, &on_screen_rect);
             int a = 10;
             SDL_Rect spr_origin_rect = (SDL_Rect) {
@@ -255,11 +256,17 @@ int main() {
                 on_screen_rect.y + (spr->origin.y*g::camera.zoom) - (a/2),
                 a,a
             };
-            SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
-            SDL_RenderFillRect(g::renderer, &spr_origin_rect);*/
+            SDL_RenderFillRect(g::renderer, &spr_origin_rect);
         }
 
-        SDL_SetRenderTarget(g::renderer, NULL);
+        // show mouse cursor
+        SDL_SetRenderDrawColor(g::renderer, 0, 255, 255, 255);
+        SDL_Rect test = (SDL_Rect) {g::viewport.mouse_position.x-2, g::viewport.mouse_position.y-2, 4, 4};
+        SDL_RenderFillRect(g::renderer, &test);
+
+
+        SDL_SetRenderTarget(g::renderer, NULL); // switch target back to renderer (window)
+
 
         SDL_Rect viewport_rect = (SDL_Rect){
             g::viewport.position.x, 
@@ -268,16 +275,20 @@ int main() {
             g::viewport.size.y
         };
 
+        // send viewport texture to window renderer
         SDL_RenderCopy(g::renderer, viewport_texture, NULL, &viewport_rect);
 
+        // red viewport outline
+        SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
+        SDL_RenderDrawRect(g::renderer, &viewport_rect);
+
+        // present the renderer back buffer
         SDL_RenderPresent(g::renderer);
 
-        SDL_SetRenderDrawColor(g::renderer, 0, 0, 0, 255);
-        SDL_RenderClear(g::renderer);
+        // debug
+        SDL_SetWindowTitle(g::window, (std::to_string(g::time.DeltaTime()) + ", " + std::to_string(g::time.FPS())).c_str());
 
-        std::string debug_title = std::to_string(g::time.DeltaTime()) + ", " + std::to_string(g::time.FPS());
-        SDL_SetWindowTitle(g::window, debug_title.c_str());
-
+        // update delta time
         g::time.UpdateLast(SDL_GetTicks());
     }
     std::cout << std::endl << "Main loop ended." << std::endl;

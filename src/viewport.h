@@ -5,7 +5,7 @@
 
 struct ViewPort {
     glm::ivec2 size = glm::vec2(0,0); // size of camera view
-    glm::vec2 position = glm::vec2(0.0f, 0.0f); // position (top left)
+    glm::vec2 position = glm::ivec2(0, 0); // position (top left)
 
     // mouse position (starting from viewport position)
     // on-screen mouse position
@@ -18,3 +18,6 @@ struct ViewPort {
 namespace g {
     extern ViewPort viewport;
 }
+
+
+extern bool MouseIsInViewPort(const ViewPort &viewport);
