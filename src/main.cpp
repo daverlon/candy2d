@@ -166,14 +166,14 @@ int main() {
 
     SetCameraPosition(&g::camera, playerSprite->position);
 
-
+    SDL_Texture* viewport_texture = nullptr;
 
     bool run = true;
     while (run) {
         g::time.UpdateFirst(SDL_GetTicks());
 
 
-        SDL_Texture* viewport_texture = SDL_CreateTexture(
+        viewport_texture = SDL_CreateTexture(
             g::renderer, 
             SDL_PIXELFORMAT_RGBA8888, 
             SDL_TEXTUREACCESS_TARGET, 
@@ -294,7 +294,7 @@ int main() {
     }
     std::cout << std::endl << "Main loop ended." << std::endl;
 
-
+    SDL_DestroyTexture(viewport_texture);
     DestroyAllSprites(&sprites);
 
     DestroySDL2();
