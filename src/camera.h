@@ -5,9 +5,10 @@
 #include "sprite.h"
 
 struct Camera {
-    glm::vec2 position = glm::vec2(0,0);
-    glm::vec2 size = glm::vec2(0,0);
-    float zoom;
+    glm::vec2 position = glm::vec2(0.0f,0.0f);
+    glm::vec2 size = glm::vec2(0.0f,0.0f);
+    glm::vec2 origin = glm::vec2(0.0f,0.0f); // origin (probably shuold be center of camera)
+    float zoom = 0.0f;
 };
 
 

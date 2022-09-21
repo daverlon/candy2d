@@ -80,23 +80,37 @@ void DestroySDL2() {
     SDL_Quit();
 }
 
+void CorrectViewPortSize() {
+    SDL_GetWindowSize(g::window, &g::window_size.x, &g::window_size.y);
+    if (g::window_size.x > g::window_size.y) {
+        g::viewport.size = glm::ivec2(g::window_size.y, g::window_size.y);
+        g::viewport.position.x = (g::window_size.x/2) - (g::viewport.size.x/2);
+        g::viewport.position.y = 0;
+    }
+    else if (g::window_size.x <= g::window_size.y) {
+        g::viewport.size = glm::ivec2(g::window_size.x, g::window_size.x);
+        g::viewport.position.y = (g::window_size.y/2) - (g::viewport.size.y/2);
+        g::viewport.position.x = 0;
+    }
+}
+
 
 int main() {
 
     InitSDL2();
 
     // init viewport
-    g::viewport.position = glm::vec2(0,0);
+    g::viewport.position = glm::vec2(150.0f,0.0f);
     g::viewport.size = glm::vec2(g::window_size.x, g::window_size.y);
 
 
-
-
-    g::camera.position = glm::vec2(0,0);
-    g::camera.size = glm::vec2(g::window_size.x, g::window_size.y);
+    g::camera.position = glm::vec2(0,0); // camera position (in the world)
+    g::camera.size = glm::vec2(g::window_size.x, g::window_size.y); // camera size
+    g::camera.origin = glm::vec2(g::viewport.position.x + (g::window_size.x/2), g::viewport.position.y + (g::window_size.y/2));
     g::camera.zoom = 4.0f;
 
     
+    CorrectViewPortSize();
 
 
     Sprite* playerSprite;
@@ -162,6 +176,7 @@ int main() {
         g::time.UpdateFirst(SDL_GetTicks());
 
         SDL_GetMouseState(&g::viewport.mouse_position.x, &g::viewport.mouse_position.y);
+        g::viewport.mouse_position -= g::viewport.position;
         //std::cout << "Mouse Pos: " << Vec2toString(g::viewport.mouse_position) << std::endl;
 
         const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
@@ -180,10 +195,15 @@ int main() {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_WINDOWEVENT) {
                 if (event.window.event == SDL_WINDOWEVENT_CLOSE) run = false;
+
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    CorrectViewPortSize();
+                }
             }
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_ESCAPE) run = false;
             }
+
         }
 
 
@@ -191,10 +211,14 @@ int main() {
 
 
         // center of camera
-        SlowlyMoveCamera(&g::camera, playerSprite->position, 20.0f*g::time.DeltaTime());
-        glm::vec2 cam_origin = g::camera.position + (g::camera.size/2.0f);
-        // std::cout << "enemySprite->position:  " << Vec2toString(enemySprite->position) << std::endl;
-        // std::cout << "playerSprite->position: " << Vec2toString(playerSprite->position) << std::endl;
+
+        glm::vec2 pos = WorldToScreen(&playerSprite->position, &g::viewport, &g::camera);
+        //SetCameraPosition(&g::camera, playerSprite->position);
+        SlowlyMoveCamera(&g::camera, playerSprite->position, 6.0f*g::time.DeltaTime());
+        // SetCameraPosition(&g::camera, playerSprite->position);
+        // std::cout << "enemySprite->position:  " << Vec2toString(pos) << std::endl;
+
+        //std::cout << "playerSprite->position: " << Vec2toString(pos) << std::endl;
 
 
 
