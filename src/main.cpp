@@ -289,6 +289,8 @@ int main() {
         // debug
         SDL_SetWindowTitle(g::window, (std::to_string(g::time.DeltaTime()) + ", " + std::to_string(g::time.FPS())).c_str());
 
+
+        // clean the viewport texture (may be a more efficient way but not sure)
         SDL_DestroyTexture(viewport_texture);
 
         // update delta time
