@@ -12,7 +12,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-#define CTFS SDL_CreateTextureFromSurface
+//#define CTFS SDL_CreateTextureFromSurface
 
 
 #include <glm/vec2.hpp>

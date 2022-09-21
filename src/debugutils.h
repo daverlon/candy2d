@@ -5,10 +5,10 @@
 
 
 
-extern void ShowError(std::string msg);
+extern void ShowError(const std::string &msg);
 
 
 
 
-extern std::string Vec2toString(glm::vec2 v);
-extern std::string Vec2toString(glm::ivec2 v);
+extern std::string Vec2toString(const glm::vec2 &v);
+extern std::string Vec2toString(const glm::ivec2 &v);
