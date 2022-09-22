@@ -11,7 +11,7 @@ void DestroyCamera(Camera *cam) {
 }
 
 void SetCameraPosition(Camera *cam, glm::vec2 position) {
-    cam->position = position;
+    cam->position = position * (g::camera.zoom/g::camera.orig_zoom);
 }
 
 void SetCameraViewSize(Camera *cam, glm::vec2 size) {

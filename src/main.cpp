@@ -106,6 +106,7 @@ void UpdateMousePosition(ViewPort &v) {
     SDL_GetMouseState(&mouse_position_buffer.x, &mouse_position_buffer.y);
     SDL_Rect bounds = Vec2Vec2toRect(g::viewport.position, g::viewport.size);
     ClampVec2(&mouse_position_buffer, &bounds);
+    // onscreen mouse position
     g::viewport.mouse_position = mouse_position_buffer;
     g::viewport.mouse_position -= g::viewport.position;
 }
@@ -179,6 +180,8 @@ int main() {
 
     SDL_Texture* viewport_texture = nullptr;
 
+    int target_index = 2;
+
     // todo: pause loop when window isn't focused
     bool run = true;
     while (run) {
@@ -193,16 +196,28 @@ int main() {
             g::viewport.size.y
         );
 
-
         UpdateMousePosition(g::viewport);
 
 
         const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
+        
 
-        if (keyboard_state[SDL_SCANCODE_DOWN])  MoveSprite(playerSprite, glm::vec2(0, -movespeed*g::time.DeltaTime()));
-        if (keyboard_state[SDL_SCANCODE_UP])    MoveSprite(playerSprite, glm::vec2(0, movespeed*g::time.DeltaTime()));
-        if (keyboard_state[SDL_SCANCODE_LEFT])  MoveSprite(playerSprite, glm::vec2(movespeed*g::time.DeltaTime(), 0));
-        if (keyboard_state[SDL_SCANCODE_RIGHT]) MoveSprite(playerSprite, glm::vec2(-movespeed*g::time.DeltaTime(), 0));
+        std::cout << std::to_string(keyboard_state[SDL_SCANCODE_RIGHT]) << std::endl;
+        glm::vec2 player_movement = glm::vec2(
+            (keyboard_state[SDL_SCANCODE_RIGHT] * (-movespeed*g::time.DeltaTime())) -
+            (keyboard_state[SDL_SCANCODE_LEFT]  * (-movespeed*g::time.DeltaTime())),
+
+            (keyboard_state[SDL_SCANCODE_DOWN]  * (-movespeed*g::time.DeltaTime())) -
+            (keyboard_state[SDL_SCANCODE_UP]    * (-movespeed*g::time.DeltaTime()))
+        );
+        glm::normalize(player_movement);
+        MoveSprite(playerSprite, player_movement);
+
+
+        // if (keyboard_state[SDL_SCANCODE_DOWN])  MoveSprite(playerSprite, glm::vec2(0, -movespeed*g::time.DeltaTime()));
+        // if (keyboard_state[SDL_SCANCODE_UP])    MoveSprite(playerSprite, glm::vec2(0, movespeed*g::time.DeltaTime()));
+        // if (keyboard_state[SDL_SCANCODE_LEFT])  MoveSprite(playerSprite, glm::vec2(movespeed*g::time.DeltaTime(), 0));
+        // if (keyboard_state[SDL_SCANCODE_RIGHT]) MoveSprite(playerSprite, glm::vec2(-movespeed*g::time.DeltaTime(), 0));
 
         if (keyboard_state[SDL_SCANCODE_S]) MoveSprite(enemySprite, glm::vec2(0, -movespeed*g::time.DeltaTime()));
         if (keyboard_state[SDL_SCANCODE_W]) MoveSprite(enemySprite, glm::vec2(0, movespeed*g::time.DeltaTime()));
@@ -241,6 +256,11 @@ int main() {
                     }
                     break;
                 }
+                if (event.key.keysym.sym == SDLK_f) {
+                    if (target_index == 2) target_index = 1;
+                    else if (target_index == 1) target_index = 2;
+                    break;
+                }
                 if (event.key.keysym.sym == SDLK_SPACE) {
                     SetSpritePosition(grassSprite, ScreenToWorld(g::viewport.mouse_position, g::viewport, g::camera));
                     break;
@@ -258,7 +278,8 @@ int main() {
             }
         }
 
-        SlowlyMoveCamera(&g::camera, playerSprite->position, 6.0f*g::time.DeltaTime());
+        SlowlyMoveCamera(&g::camera, sprites[target_index]->position, 6.0f*g::time.DeltaTime());
+        //SlowlyMoveCamera(&g::camera, playerSprite->position, 6.0f*g::time.DeltaTime());
 
 
         // clear the window texture
@@ -301,20 +322,6 @@ int main() {
         SDL_SetRenderDrawColor(g::renderer, 0, 255, 255, 255);
         SDL_Rect viewport_mouse_rect = (SDL_Rect) {g::viewport.mouse_position.x-2, g::viewport.mouse_position.y-2, 4, 4};
         SDL_RenderFillRect(g::renderer, &viewport_mouse_rect);
-
-
-        SDL_SetRenderDrawColor(g::renderer, 0, 255, 0, 255);
-        SDL_Rect on_screen_mouse_rect = (SDL_Rect) Vec2Vec2toRect(
-            glm::ivec2(ScreenToWorld(g::viewport.mouse_position-glm::ivec2(4,4), g::viewport, g::camera)),
-            glm::ivec2(8,8)
-        );
-
-        glm::ivec2 test = WorldToScreen(glm::vec2(on_screen_mouse_rect.x, on_screen_mouse_rect.y), g::viewport, g::camera);
-        SDL_Rect testt = (SDL_Rect) Vec2Vec2toRect(
-            test-glm::ivec2(4,4),
-            glm::ivec2(8,8)
-        );
-        SDL_RenderFillRect(g::renderer, &testt);
 
 
         SDL_SetRenderTarget(g::renderer, NULL); // switch target back to renderer (window)
