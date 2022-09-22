@@ -123,6 +123,7 @@ int main() {
     g::camera.position = glm::vec2(0,0); // camera position (in the world)
     g::camera.size = glm::vec2(g::window_size.x, g::window_size.y); // camera size
     g::camera.origin = glm::vec2(g::viewport.position.x + (g::window_size.x/2), g::viewport.position.y + (g::window_size.y/2));
+    g::camera.orig_zoom = 5.0f;
     g::camera.zoom = 3.0f;
 
     
@@ -194,7 +195,6 @@ int main() {
 
 
         UpdateMousePosition(g::viewport);
-        //std::cout << "Mouse world pos: " << Vec2toString(ScreenToWorld(g::viewport.mouse_position, g::viewport, g::camera)) << std::endl;;
 
 
         const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
@@ -217,6 +217,9 @@ int main() {
                     run = false;
                     break;
                 }
+                // on mac it seems that every the cursor
+                // leave sthe window (in windows mode)
+                // it triggers one of these events!
                 if (event.window.event == SDL_WINDOWEVENT_RESIZED
                     || SDL_WINDOWEVENT_RESTORED 
                     || SDL_WINDOWEVENT_MAXIMIZED
@@ -229,14 +232,34 @@ int main() {
                     run = false;
                     break;
                 }
+                if (event.key.keysym.sym == SDLK_e) {
+                    {
+                        glm::ivec2 screenpos = g::viewport.mouse_position;
+                        std::cout << "\n\n\nMouse screen pos: " << Vec2toString(screenpos) << std::endl;
+                        glm::ivec2 worldpos = ScreenToWorld(screenpos, g::viewport, g::camera);
+                        std::cout << "Mouse world  pos: " << Vec2toString(worldpos) << std::endl;
+                    }
+                    break;
+                }
                 if (event.key.keysym.sym == SDLK_SPACE) {
                     SetSpritePosition(grassSprite, ScreenToWorld(g::viewport.mouse_position, g::viewport, g::camera));
+                    break;
+                }
+                if (event.key.keysym.sym == SDLK_EQUALS) {
+                    g::camera.zoom += 0.1f;
+                    std::cout << "Camera zoom: " << g::camera.zoom << "/" << g::camera.orig_zoom << std::endl;
+                    break;
+                }
+                if (event.key.keysym.sym == SDLK_MINUS) {
+                    g::camera.zoom -= 0.1f;
+                    std::cout << "Camera zoom: " << g::camera.zoom << "/" << g::camera.orig_zoom << std::endl;
                     break;
                 }
             }
         }
 
         SlowlyMoveCamera(&g::camera, playerSprite->position, 6.0f*g::time.DeltaTime());
+
 
         // clear the window texture
         SDL_SetRenderDrawColor(g::renderer, 0, 0, 0, 255);
@@ -276,8 +299,22 @@ int main() {
 
         // show mouse cursor
         SDL_SetRenderDrawColor(g::renderer, 0, 255, 255, 255);
-        SDL_Rect mouse_rect = (SDL_Rect) {g::viewport.mouse_position.x-2, g::viewport.mouse_position.y-2, 4, 4};
-        SDL_RenderFillRect(g::renderer, &mouse_rect);
+        SDL_Rect viewport_mouse_rect = (SDL_Rect) {g::viewport.mouse_position.x-2, g::viewport.mouse_position.y-2, 4, 4};
+        SDL_RenderFillRect(g::renderer, &viewport_mouse_rect);
+
+
+        SDL_SetRenderDrawColor(g::renderer, 0, 255, 0, 255);
+        SDL_Rect on_screen_mouse_rect = (SDL_Rect) Vec2Vec2toRect(
+            glm::ivec2(ScreenToWorld(g::viewport.mouse_position-glm::ivec2(4,4), g::viewport, g::camera)),
+            glm::ivec2(8,8)
+        );
+
+        glm::ivec2 test = WorldToScreen(glm::vec2(on_screen_mouse_rect.x, on_screen_mouse_rect.y), g::viewport, g::camera);
+        SDL_Rect testt = (SDL_Rect) Vec2Vec2toRect(
+            test-glm::ivec2(4,4),
+            glm::ivec2(8,8)
+        );
+        SDL_RenderFillRect(g::renderer, &testt);
 
 
         SDL_SetRenderTarget(g::renderer, NULL); // switch target back to renderer (window)

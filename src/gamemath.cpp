@@ -5,8 +5,8 @@ glm::vec2 WorldToScreen(const Sprite &spr, const ViewPort &view, const Camera &c
     glm::vec2 ret = glm::vec2(0,0);
     // ret += g::viewport.position;
     ret += cam.position + (cam.size/2.0f);
-    ret -= spr.position;
-    ret -= (spr.origin * g::camera.zoom); // adjust origin by camera zoom!
+    ret -= spr.position*(g::camera.zoom/g::camera.orig_zoom);
+    ret -= (spr.origin * g::camera.zoom); // adjust origin by camera zoom! (DONE!)
 
     return ret;
 }
@@ -15,7 +15,7 @@ glm::vec2 WorldToScreen(const glm::vec2 &pos, const ViewPort &view, const Camera
     glm::vec2 ret = glm::vec2(0.0f,0.0f);
     // ret += g::viewport.position;
     ret += cam.position + (cam.size/2.0f);
-    ret -= pos; // assuming that pos is the origin
+    ret -= pos *(g::camera.zoom/g::camera.orig_zoom); // assuming that pos is the origin
     return ret;
 }
 
@@ -23,7 +23,8 @@ glm::vec2 WorldToScreen(const glm::ivec2 &pos, const ViewPort &view, const Camer
     glm::vec2 ret = glm::vec2(0.0f,0.0f);
     // ret += g::viewport.position;
     ret += cam.position + (cam.size/2.0f);
-    ret -= pos; // assuming that pos is the origin
+    // probably not a good idea to use integers here
+    ret -= glm::vec2(pos) * (g::camera.zoom/g::camera.orig_zoom); // assuming that pos is the origin
     return ret;
 }
 
@@ -32,6 +33,7 @@ glm::vec2 ScreenToWorld(const glm::ivec2 &pos, const ViewPort &view, const Camer
     ret -= g::camera.position;
     ret -= (g::camera.size/2.0f);
     ret *= -1;
+    ret /= (g::camera.zoom/g::camera.orig_zoom);
     return ret;
 }
 
