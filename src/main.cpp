@@ -111,6 +111,57 @@ void UpdateMousePosition(ViewPort &v) {
     g::viewport.mouse_position -= g::viewport.position;
 }
 
+void LoadTileMap(SDL_Texture* to) {
+    std::string tilemap_atlas_path = "res/img/test_tilemap.png";
+    glm::ivec2 tile_size = glm::ivec2(32, 32);
+
+    SDL_Texture* atlas_texture = IMG_LoadTexture(g::renderer, tilemap_atlas_path.c_str());
+    glm::ivec2 atlas_size = glm::ivec2(0, 0);
+    SDL_QueryTexture(atlas_texture, NULL, NULL, &atlas_size.x, &atlas_size.y);
+    std::cout << "Atlas size: " << Vec2toString(atlas_size) << std::endl;
+
+    // ---------------------------- //
+
+    glm::ivec2 tilemap_size = glm::ivec2(64, 64);
+
+
+
+    SDL_SetRenderTarget(g::renderer, to);
+
+    std::vector< std::vector<int> > rows;
+    
+    std::vector<int> row;
+    row.push_back(1);
+    row.push_back(2);
+    row.push_back(3);
+    row.push_back(4);
+    rows.push_back(row);
+    
+    SDL_Rect tilemap_pos = (SDL_Rect) {0,0,tile_size.x,tile_size.y};
+
+    for (int i = 0; i < rows.size(); i++) {
+        for (int a = 0; a < rows[i].size(); a++) {
+            glm::ivec2 cur_tile_pos = glm::ivec2(0,0);
+            int cur_tile = rows[i][a];
+            cur_tile_pos.x = a*tile_size.x;
+            if (cur_tile_pos.x >= tilemap_size.x) {
+                int tile_count = cur_tile_pos.x / tile_size.x;
+                cur_tile_pos.x -= (tile_count * tile_size.x) + (abs(tile_count-rows[i][a])*tile_size.x);
+                cur_tile_pos.y += tile_size.y;
+            }
+            SDL_Rect atlas_src = Vec2Vec2toRect(cur_tile_pos, tile_size);
+
+            std::cout << "src pos: " << Vec2toString(cur_tile_pos) << ", dst pos" 
+                << Vec2toString(glm::ivec2(tilemap_pos.x, tilemap_pos.y)) << std::endl;
+
+            SDL_RenderCopy(g::renderer, atlas_texture, &atlas_src, &tilemap_pos);
+            tilemap_pos.x += tile_size.x;
+        }
+        tilemap_pos.y += tile_size.y;
+    }
+
+    SDL_DestroyTexture(atlas_texture);
+}
 
 int main() {
 
@@ -125,10 +176,12 @@ int main() {
     g::camera.size = glm::vec2(g::window_size.x, g::window_size.y); // camera size
     g::camera.origin = glm::vec2(g::viewport.position.x + (g::window_size.x/2), g::viewport.position.y + (g::window_size.y/2));
     g::camera.orig_zoom = 5.0f;
-    g::camera.zoom = 3.0f;
+    g::camera.zoom = 4.0f;
 
     
     CorrectViewPortSize();
+
+
 
     Sprite* playerSprite;
     Sprite* enemySprite;
@@ -143,9 +196,6 @@ int main() {
             glm::vec2(0.0f,0.0f))
     );
     Sprite* grassSprite = sprites[sprites.size()-1];
-
-
-
 
     sprites.push_back(
         new Sprite(
@@ -177,6 +227,18 @@ int main() {
 
     SetCameraPosition(&g::camera, playerSprite->position);
 
+    SDL_Texture* tilemap_texture = SDL_CreateTexture(
+        g::renderer, 
+        SDL_PIXELFORMAT_RGBA8888, 
+        SDL_TEXTUREACCESS_TARGET,
+        128,
+        32
+    );
+    LoadTileMap(tilemap_texture);
+    std::cout << "Tilemap created" << std::endl;
+
+
+
 
     SDL_Texture* viewport_texture = nullptr;
 
@@ -187,7 +249,11 @@ int main() {
     while (run) {
         g::time.UpdateFirst(SDL_GetTicks());
 
+
         // reset viewport texture
+        SDL_SetRenderTarget(g::renderer, viewport_texture);
+        SDL_RenderClear(g::renderer);
+        SDL_SetRenderTarget(g::renderer, NULL);
         viewport_texture = SDL_CreateTexture(
             g::renderer, 
             SDL_PIXELFORMAT_RGBA8888, 
@@ -195,14 +261,13 @@ int main() {
             g::viewport.size.x, 
             g::viewport.size.y
         );
+        SDL_SetRenderTarget(g::renderer, NULL);
+
 
         UpdateMousePosition(g::viewport);
 
 
         const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
-        
-
-        std::cout << std::to_string(keyboard_state[SDL_SCANCODE_RIGHT]) << std::endl;
         glm::vec2 player_movement = glm::vec2(
             (keyboard_state[SDL_SCANCODE_RIGHT] * (-movespeed*g::time.DeltaTime())) -
             (keyboard_state[SDL_SCANCODE_LEFT]  * (-movespeed*g::time.DeltaTime())),
@@ -214,15 +279,11 @@ int main() {
         MoveSprite(playerSprite, player_movement);
 
 
-        // if (keyboard_state[SDL_SCANCODE_DOWN])  MoveSprite(playerSprite, glm::vec2(0, -movespeed*g::time.DeltaTime()));
-        // if (keyboard_state[SDL_SCANCODE_UP])    MoveSprite(playerSprite, glm::vec2(0, movespeed*g::time.DeltaTime()));
-        // if (keyboard_state[SDL_SCANCODE_LEFT])  MoveSprite(playerSprite, glm::vec2(movespeed*g::time.DeltaTime(), 0));
-        // if (keyboard_state[SDL_SCANCODE_RIGHT]) MoveSprite(playerSprite, glm::vec2(-movespeed*g::time.DeltaTime(), 0));
-
         if (keyboard_state[SDL_SCANCODE_S]) MoveSprite(enemySprite, glm::vec2(0, -movespeed*g::time.DeltaTime()));
         if (keyboard_state[SDL_SCANCODE_W]) MoveSprite(enemySprite, glm::vec2(0, movespeed*g::time.DeltaTime()));
         if (keyboard_state[SDL_SCANCODE_A]) MoveSprite(enemySprite, glm::vec2(movespeed*g::time.DeltaTime(), 0));
         if (keyboard_state[SDL_SCANCODE_D]) MoveSprite(enemySprite, glm::vec2(-movespeed*g::time.DeltaTime(), 0));
+
 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -279,11 +340,11 @@ int main() {
         }
 
         SlowlyMoveCamera(&g::camera, sprites[target_index]->position, 6.0f*g::time.DeltaTime());
-        //SlowlyMoveCamera(&g::camera, playerSprite->position, 6.0f*g::time.DeltaTime());
 
 
         // clear the window texture
-        SDL_SetRenderDrawColor(g::renderer, 0, 0, 0, 255);
+        SDL_SetRenderTarget(g::renderer, NULL);
+        SDL_SetRenderDrawColor(g::renderer, 50, 50, 50, 255);
         SDL_RenderClear(g::renderer);
 
    
@@ -291,6 +352,13 @@ int main() {
         // clear viewport_texture
         SDL_SetRenderDrawColor(g::renderer, 100, 100, 100, 255);
         SDL_RenderClear(g::renderer);
+
+
+        glm::ivec2 tilemap_pos = WorldToScreen(glm::ivec2(400, 400), g::viewport, g::camera);
+        glm::ivec2 tilemap_size = glm::vec2(128,32) * g::camera.zoom;
+        SDL_Rect tilemap_rect = Vec2Vec2toRect(tilemap_pos, tilemap_size);
+        SDL_RenderCopy(g::renderer, tilemap_texture, NULL, &tilemap_rect);
+
 
         // send sprites to viewport texture
         for (auto &spr : sprites) {
@@ -336,6 +404,7 @@ int main() {
 
         // send viewport texture to window renderer
         SDL_RenderCopy(g::renderer, viewport_texture, NULL, &viewport_rect);
+        SDL_DestroyTexture(viewport_texture);
 
         // red viewport outline
         SDL_SetRenderDrawColor(g::renderer, 255, 0, 0, 255);
@@ -346,10 +415,6 @@ int main() {
 
         // debug
         SDL_SetWindowTitle(g::window, (std::to_string(g::time.DeltaTime()) + ", " + std::to_string(g::time.FPS())).c_str());
-
-
-        // clean the viewport texture (may be a more efficient way but not sure)
-        SDL_DestroyTexture(viewport_texture);
 
         // update delta time
         g::time.UpdateLast(SDL_GetTicks());
