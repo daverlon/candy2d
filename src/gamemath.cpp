@@ -37,7 +37,7 @@ glm::vec2 ScreenToWorld(const glm::ivec2 &pos, const ViewPort &view, const Camer
     return ret;
 }
 
-void ClampVec2(glm::vec2* v, const SDL_Rect *bounds) {
+void ClampVec2(glm::vec2* v, const SDL_FRect *bounds) {
     if (v->x > (bounds->x + bounds->w)) v->x = (bounds->x + bounds->w);
     if (v->x < (bounds->x)) v->x = bounds->x;
     if (v->y > (bounds->y + bounds->h)) v->y = (bounds->y + bounds->h);
@@ -51,12 +51,19 @@ void ClampVec2(glm::ivec2* v, const SDL_Rect *bounds) {
     if (v->y < (bounds->y)) v->y = bounds->y;
 }
 
-SDL_Rect Vec2Vec2toRect(const glm::vec2& v1, const glm::vec2& v2) {
-    return (SDL_Rect){v1.x, v1.y, v2.x, v2.y};
+void ClampVec2(glm::ivec2* v, const SDL_FRect *bounds) {
+    if (v->x > (bounds->x + bounds->w)) v->x = (bounds->x + bounds->w);
+    if (v->x < (bounds->x)) v->x = bounds->x;
+    if (v->y > (bounds->y + bounds->h)) v->y = (bounds->y + bounds->h);
+    if (v->y < (bounds->y)) v->y = bounds->y;
 }
 
-SDL_Rect Vec2Vec2toRect(const glm::vec2& v1, const glm::ivec2& v2) {
-    return (SDL_Rect){v1.x, v1.y, v2.x, v2.y};
+SDL_FRect Vec2Vec2toRect(const glm::vec2& v1, const glm::vec2& v2) {
+    return (SDL_FRect){v1.x, v1.y, v2.x, v2.y};
+}
+
+SDL_FRect Vec2Vec2toRect(const glm::vec2& v1, const glm::ivec2& v2) {
+    return (SDL_FRect){v1.x, v1.y, (float)v2.x, (float)v2.y};
 }
 
 SDL_Rect Vec2Vec2toRect(const glm::ivec2& v1, const glm::ivec2& v2) {

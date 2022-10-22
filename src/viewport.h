@@ -21,3 +21,7 @@ namespace g {
 
 
 extern bool MouseIsInViewPort(const ViewPort &viewport);
+
+extern void CorrectViewPortSize();
+
+extern void UpdateMousePosition(ViewPort &v);
