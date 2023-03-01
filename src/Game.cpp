@@ -1,5 +1,9 @@
 #include "Game.h"
 
+/*
+    Game::Game() constructor initializes SDL2, creates an SDL_Window and SDL_Renderer, 
+    then sets up the game viewport and camera.
+*/
 Game::Game() {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         ShowError("Failed to initialize SDL.");
@@ -50,6 +54,10 @@ Game::Game() {
     SetRunning(true);
 }
 
+/*
+    Game::~Game() destructor destroys all SDL subsystems, game systems and the entity manager. The entity manager will
+    then cleanup all entities and their components.
+*/
 Game::~Game() {
     std::cout << "Destroying up game objects..." << std::endl;
     delete spriteSystem;
@@ -67,6 +75,9 @@ Game::~Game() {
     std::cout << " Finished." << std::endl;
 }
 
+/*
+    Game::HandleEvents() handles all SDL window events and single key presses.
+*/
 void Game::HandleEvents() {
     SDL_Event ev;
     while (SDL_PollEvent(&ev)) {
@@ -109,6 +120,10 @@ void Game::HandleEvents() {
     }
 }
 
+/*
+    Game::UpdateKeyboardState() updates the _keyboardState variable with SDL_GetKeyboardState.
+    _keyboardState is expected to be passed into systems that require input control.
+*/
 void Game::UpdateKeyboardState() {
     _keyboardState = SDL_GetKeyboardState(NULL);
 
@@ -126,6 +141,9 @@ void Game::UpdateKeyboardState() {
     camera.Translate(cam_movement);
 }
 
+/*
+    Game::Init() initializes the entity manager and game systems. It also loads the tile atlas. 
+*/
 void Game::Init() {
     // init tileset
     _tileSet = IMG_LoadTexture(_renderer, "resources/tileset.png");
@@ -153,12 +171,17 @@ void Game::Init() {
 
 }
 
+/*
+    Game::Update() updates each game system each tick.
+*/
 void Game::Update() {
     // update game logic (run systems)
     animatorSystem->Update(time.DeltaTime());
-    //EntityManager.RunAnimationSystem(Time.DeltaTime());
 }
 
+/*
+    Game::Render() updates each rendering system each frame. (delta time should not be required here.)
+*/
 void Game::Render() {
     // iterate through entities with sprite component
     spriteSystem->Render();
@@ -169,6 +192,9 @@ void Game::Render() {
     SDL_RenderFillRect(_renderer, &mouse_rect);
 }
 
+/*
+    Game::Run() runs the main game loop. Before the loop starts, it runs Game::Init().
+*/
 void Game::Run() {
 
     Init();
