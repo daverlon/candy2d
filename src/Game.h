@@ -13,6 +13,7 @@
 #include "Components/SpriteComponent.h"
 #include "Components/AnimatorComponent.h"
 
+#include "Systems/SpriteSystem.h"
 #include "Systems/AnimatorSystem.h"
 
 class Game {
@@ -26,6 +27,8 @@ private:
 
     SDL_Texture* _tileSet = nullptr;
 
+    const Uint8* _keyboardState; // hold keyboard state
+
 public:
     Game();
     ~Game();
@@ -38,11 +41,15 @@ public:
     EntityManager* entityManager;
 
     // systems
+    SpriteSystem* spriteSystem;
     AnimatorSystem* animatorSystem;
 
 
     void HandleEvents();
-    void HandleKeyboardState();
+
+    void UpdateKeyboardState();
+    const Uint8* GetKeyboardState() const { return _keyboardState; }
+
     void Init();
     void Update();
     void Render();

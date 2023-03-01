@@ -54,7 +54,7 @@ public:
         return ret;
     }
 
-    glm::vec2 ScreenToWorld(const glm::ivec2 &pos) {
+    inline glm::vec2 ScreenToWorld(const glm::ivec2 &pos) {
         glm::vec2 ret = pos;
         ret -= GetPosition();
         ret -= (GetSize() / 2.0f);

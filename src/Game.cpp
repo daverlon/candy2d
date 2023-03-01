@@ -52,6 +52,7 @@ Game::Game() {
 
 Game::~Game() {
     std::cout << "Destroying up game objects..." << std::endl;
+    delete spriteSystem;
     delete animatorSystem;
     delete entityManager;
 
@@ -108,19 +109,19 @@ void Game::HandleEvents() {
     }
 }
 
-void Game::HandleKeyboardState() {
-    const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
+void Game::UpdateKeyboardState() {
+    _keyboardState = SDL_GetKeyboardState(NULL);
 
-    if (keyboard_state[SDL_SCANCODE_E]) std::cout << "Holding E." << std::endl;
+    if (GetKeyboardState()[SDL_SCANCODE_E]) std::cout << "Holding E." << std::endl;
 
     const float ms = 150.0f;
 
     glm::vec2 cam_movement = glm::vec2(
-        (keyboard_state[SDL_SCANCODE_RIGHT] * (-ms*time.DeltaTime())) -
-        (keyboard_state[SDL_SCANCODE_LEFT]  * (-ms*time.DeltaTime())),
+        (GetKeyboardState()[SDL_SCANCODE_RIGHT] * (-ms*time.DeltaTime())) -
+        (GetKeyboardState()[SDL_SCANCODE_LEFT]  * (-ms*time.DeltaTime())),
 
-        (keyboard_state[SDL_SCANCODE_DOWN]  * (-ms*time.DeltaTime())) -
-        (keyboard_state[SDL_SCANCODE_UP]    * (-ms*time.DeltaTime()))
+        (GetKeyboardState()[SDL_SCANCODE_DOWN]  * (-ms*time.DeltaTime())) -
+        (GetKeyboardState()[SDL_SCANCODE_UP]    * (-ms*time.DeltaTime()))
     );
     camera.Translate(cam_movement);
 }
@@ -133,6 +134,7 @@ void Game::Init() {
     entityManager = new EntityManager();
 
     // init systems
+    spriteSystem = new SpriteSystem(_renderer, entityManager, _tileSet, &camera);
     animatorSystem = new AnimatorSystem(entityManager);
 
     
@@ -142,6 +144,13 @@ void Game::Init() {
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4))
     );
+
+    entityManager->CreateEntity(
+        new TransformComponent(glm::vec2(100.0f, 100.0f)),
+        new SpriteComponent(SDL_Rect{ 432, 32, 16, 16 }),
+        new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4))
+    );
+
 }
 
 void Game::Update() {
@@ -151,26 +160,8 @@ void Game::Update() {
 }
 
 void Game::Render() {
-    // copy textures to renderer
-
     // iterate through entities with sprite component
-    for (auto &c : entityManager->GetEntitiesWithComponent<SpriteComponent>()) {
-
-        TransformComponent* transform = c->GetComponent<TransformComponent>();
-        SpriteComponent* sprite = c->GetComponent<SpriteComponent>();
-        // std::cout << RectToString(sprite->GetSrcRect()) << std::endl;
-
-        glm::vec2 world_pos = transform->GetPosition();
-        glm::vec2 on_screen_position = camera.WorldToScreen(glm::vec2(world_pos.x, world_pos.y));
-
-        glm::vec2 on_screen_size = glm::vec2(0.0f, 0.0f);
-        on_screen_size += glm::vec2(sprite->GetSrcRect().w, sprite->GetSrcRect().h);
-        on_screen_size *= camera.GetZoom();
-
-        SDL_FRect on_screen_rect = Vec2Vec2toRect(on_screen_position, on_screen_size);
-
-        SDL_RenderCopyF(_renderer, _tileSet, &sprite->GetSrcRect(), &on_screen_rect);
-    }
+    spriteSystem->Render();
 
     // draw the mouse cursor
     SDL_SetRenderDrawColor(_renderer, 0, 255, 255, 255);
@@ -194,7 +185,7 @@ void Game::Run() {
         HandleEvents();
 
         // handle keyboard state (keys held)
-        HandleKeyboardState();
+        UpdateKeyboardState();
 
         // process game logic
         Update();
