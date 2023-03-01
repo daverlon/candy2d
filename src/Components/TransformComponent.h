@@ -9,11 +9,11 @@ private:
 public:
     TransformComponent(glm::vec2 position = glm::vec2(0.0f, 0.0f)) :
         _position(position) {
-            std::cout << "        TransformComponent()" << std::endl;
+            std::cout << "        TransformComponent()" << this << std::endl;
         }
 
     ~TransformComponent() {
-        std::cout << "        ~TransformComponent()" << std::endl;
+        std::cout << "        ~TransformComponent()" << this << std::endl;
     }
 
     const glm::vec2& GetPosition() const { return _position; }

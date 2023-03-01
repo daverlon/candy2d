@@ -51,6 +51,10 @@ Game::Game() {
 }
 
 Game::~Game() {
+    std::cout << "Destroying up game objects..." << std::endl;
+    delete animatorSystem;
+    delete entityManager;
+
     std::cout << "Destroying SDL...";
     SDL_DestroyTexture(_tileSet);
 
@@ -121,6 +125,24 @@ void Game::HandleKeyboardState() {
     camera.Translate(cam_movement);
 }
 
+void Game::Init() {
+    // init tileset
+    _tileSet = IMG_LoadTexture(_renderer, "resources/tileset.png");
+
+    // init entity manager
+    entityManager = new EntityManager();
+
+    // init systems
+    animatorSystem = new AnimatorSystem(entityManager);
+
+    
+    // init entities?
+    entityManager->CreateEntity(
+        new TransformComponent(glm::vec2(0.0f, 0.0f)),
+        new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 })
+    );
+}
+
 void Game::Update() {
     // update game logic (run systems)
     //EntityManager.RunAnimationSystem(Time.DeltaTime());
@@ -150,32 +172,13 @@ void Game::Render() {
 
     // draw the mouse cursor
     SDL_SetRenderDrawColor(_renderer, 0, 255, 255, 255);
-    SDL_Rect mouse_rect = (SDL_Rect) {viewPort.GetMousePosition().x - 2, viewPort.GetMousePosition().y - 2, 4, 4};
+    SDL_Rect mouse_rect = SDL_Rect {viewPort.GetMousePosition().x - 2, viewPort.GetMousePosition().y - 2, 4, 4};
     SDL_RenderFillRect(_renderer, &mouse_rect);
 }
 
 void Game::Run() {
 
-    _tileSet = IMG_LoadTexture(_renderer, "resources/tileset.png");
-    // testEnt.AddAnimationComponent(AnimationComponent((SDL_Rect){432, 80, 16, 16}, 0.09f, 4));
-    // testEnt2.AddAnimationComponent(AnimationComponent((SDL_Rect){432, 32, 16, 16}, 0.03f, 4));
-
-
-    entityManager = new EntityManager();
-    animatorSystem = new AnimatorSystem(entityManager);
-
-    entityManager->CreateEntity(
-        new TransformComponent(glm::vec2(0.0f, 0.0f)), 
-        new SpriteComponent((SDL_Rect){432, 80, 16, 16})
-    );
-
-    // entityManager->PrintEntities();
-
-    delete animatorSystem;
-    delete entityManager;
-    // entityManager->PrintEntities();
-    return;
-
+    Init();
 
     // main loop
     while (GetRunning()) {

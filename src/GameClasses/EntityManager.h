@@ -15,17 +15,23 @@ public:
 
     ~EntityManager() {
         std::cout << "~EntityManager()" << std::endl;
+        std::cout << "[Entity Manager] Clearing entities container..." << std::endl;
+
+        std::unordered_set<Entity*> deletedEntities;
+
         for (auto& pair : _entityComponents) {
             for (auto entity : pair.second) {
-                std::cout << "Deleting entity " << entity << "..." << std::endl;
-                for (auto&c : entity->GetComponents()) {
-                    std::cout << "    Deleting component " << c << " of type " << typeid(*c).name() << std::endl;
-                    delete c;
+                if (deletedEntities.find(entity) == deletedEntities.end()) {
+                    std::cout << "[Entity Manager] Deleting entity " << entity << "..." << std::endl;
+                    deletedEntities.insert(entity);
+                    delete entity;
                 }
-                delete entity;
             }
         }
-        std::cout << "Finished deleting entity" << std::endl;
+        std::cout << "_entityComponents size: " << _entityComponents.size() << std::endl;
+        _entityComponents.clear();
+        std::cout << "_entityComponents size: " << _entityComponents.size() << std::endl;
+        std::cout << "[Entity Manager] Finished deleting entities" << std::endl;
     }
 
     template<typename... ComponentPtrs>
@@ -61,17 +67,6 @@ public:
         return entities;
     }
 
-    // void RemoveEntity(std::unique_ptr<Entity> entity) {
-    //     for (auto& component : entity->GetComponents()) {
-    //         std::type_index type = typeid(*component);
-    //         auto& entitySet = _entityComponents[type];
-    //         auto it = entitySet.find(std::unique_ptr<Entity>(entity.get()));
-    //         if (it != entitySet.end()) {
-    //             entitySet.erase(it);
-    //         }
-    //     }
-    // }
-
     void RemoveEntity(Entity* entity) {
         for (auto& component : entity->GetComponents()) {
             auto& entitySet = _entityComponents[typeid(*component)];
@@ -84,8 +79,13 @@ public:
         delete entity;
     }
     
-    void PrintEntities() {
+    void PrintEntitiesAndComponents() {
         std::cout << "------- Printing entities -------" << std::endl;
+        std::cout << "_entityComponents size: " << _entityComponents.size() << std::endl;
+        if (_entityComponents.empty()) {
+            std::cout << "No entities found" << std::endl;
+            return;
+        }
         for (auto& pair : _entityComponents) {
             std::cout << std::endl << "Components of type " << pair.first.name() << ":\n";
             for (auto entity : pair.second) {
@@ -96,5 +96,18 @@ public:
             }
         }
         std::cout << "----------------------------------" << std::endl;
+    }
+
+    void PrintEntities() {
+        std::cout << "Entities:" << std::endl;
+        std::unordered_set<Entity*> printedEntities;
+        for (auto& pair : _entityComponents) {
+            for (auto entity : pair.second) {
+                if (printedEntities.find(entity) == printedEntities.end()) {
+                    std::cout << entity << std::endl;
+                    printedEntities.insert(entity);
+                }
+            }
+        }
     }
 };

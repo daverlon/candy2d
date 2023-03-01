@@ -22,16 +22,22 @@ public:
     ~Entity() {
         std::cout << "Started entity destruct" << std::endl;
         std::cout << "~Entity() " << this << std::endl;
+        std::cout << "=======" << std::endl;
+        std::cout << "Component list size: " << _components.size() << std::endl;
+        std::cout << "=======" << std::endl;
+
         for (auto c : _components) {
-            std::cout << "Deleting component: " << typeid(*c).name() << std::endl;
             delete c;
-        }
+        } 
+        _components.clear(); // avoid double delete
+        std::cout << "Component list size: " << _components.size() << std::endl;
+        std::cout << "=======" << std::endl;
         std::cout << std::endl;
     }
 
 
-    void AddComponent(Component* component) { 
-        _components.push_back(component); 
+    void AddComponent(Component* component) {
+        _components.push_back(component);
     }
 
     template<typename... ComponentPtrs>
@@ -65,6 +71,7 @@ public:
     
     std::vector<Component*> GetComponents() {
         std::cout << "Getting components for entity " << this << std::endl;
+        std::cout << "Component count for entity " << this << ": " << _components.size() << std::endl;
         std::vector<Component*> components;
         components.reserve(_components.size());
         for (auto c : _components) {

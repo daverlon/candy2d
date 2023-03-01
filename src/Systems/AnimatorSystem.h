@@ -13,10 +13,10 @@ private:
 public:
     AnimatorSystem(EntityManager* entityManager) :
         _entityManager(entityManager) {
-            std::cout << "AnimatorSystem()" << std::endl;
+            std::cout << "AnimatorSystem()" <<  this << std::endl;
         }
     ~AnimatorSystem() {
-        std::cout << "~AnimatorSystem()" << std::endl;
+        std::cout << "~AnimatorSystem()" << this << std::endl;
     }
 
     void Update(const float& dt) {

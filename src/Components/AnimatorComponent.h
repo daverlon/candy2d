@@ -13,10 +13,10 @@ private:
 public:
     Animation(const SDL_Rect& startFrame, float delay, int numFrames) :
         _startFrame(startFrame), _delay(delay), _timer(0.0f), _numFrames(numFrames), _curFrame(0) {
-            std::cout << "        Animation()" << std::endl;
+            std::cout << "        Animation()" << this << std::endl;
         }
     ~Animation() {
-        std::cout << "        ~Animation()" << std::endl;
+        std::cout << "        ~Animation()" << this << std::endl;
     }
 
     const SDL_Rect& GetStartFrame() const { return _startFrame; }
