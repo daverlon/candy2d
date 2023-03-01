@@ -7,6 +7,15 @@
 #include <format>
 #include <algorithm>
 #include <map>
+#include <format>
+
+
+
+// ECS
+#include <unordered_set>
+#include <unordered_map>
+#include <typeindex>
+#include <typeinfo>
 
 
 #include <SDL2/SDL.h>
@@ -15,17 +24,5 @@
 
 //#define CTFS SDL_CreateTextureFromSurface
 
-
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
-
-
-namespace g {
-    extern SDL_Window* window;
-    extern SDL_Renderer* renderer;
-    extern glm::ivec2 window_size;
-}
-
-
-extern void PrintVec2(glm::vec2 v);
-
