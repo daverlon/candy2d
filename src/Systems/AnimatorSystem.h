@@ -26,7 +26,7 @@ public:
             AnimatorComponent* animator = e->GetComponent<AnimatorComponent>();
             SpriteComponent* sprite = e->GetComponent<SpriteComponent>();
 
-            Animation* anim = &animator->GetCurrentAnimation();
+            Animation* anim = animator->GetCurrentAnimation();
 
             if (anim->GetTimer() >= anim->GetDelay()) {
                 anim->IncCurFrame();

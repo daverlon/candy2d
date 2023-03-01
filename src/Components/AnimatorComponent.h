@@ -16,7 +16,7 @@ public:
             std::cout << "        Animation()" << this << std::endl;
         }
     ~Animation() {
-        std::cout << "        ~Animation()" << this << std::endl;
+        std::cout << "        ~Animation() " << this << std::endl;
     }
 
     const SDL_Rect& GetStartFrame() const { return _startFrame; }
@@ -42,15 +42,22 @@ public:
 
 class AnimatorComponent : public Component {
 private:
-    std::vector<Animation> _animations;
+    std::vector<Animation*> _animations;
     int _curAnimationIndex;
 public:
-    AnimatorComponent() 
+
+    template<typename... Args>
+    AnimatorComponent(Args&&... args) 
         : _curAnimationIndex(0) {
+        (_animations.emplace_back(std::forward<Args>(args)...));
         std::cout << "    AnimatorComponent()" << std::endl;
     }
     ~AnimatorComponent() {
         std::cout << "    ~AnimatorComponent()" << std::endl;
+        for (auto a : _animations) {
+            delete a;
+        }
+        _animations.clear();
     }
     int GetCurrentAnimationIndex() const { return _curAnimationIndex; }
     void SetCurrentAnimationIndex(int index) { _curAnimationIndex = index; }
@@ -64,5 +71,5 @@ public:
     void PopAnimation() { _animations.pop_back(); }
 
     int GetNumAnimations() const { return _animations.size(); }
-    Animation& GetCurrentAnimation() { return _animations[_curAnimationIndex]; }
+    Animation* GetCurrentAnimation() { return _animations[_curAnimationIndex]; }
 };

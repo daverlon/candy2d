@@ -139,12 +139,14 @@ void Game::Init() {
     // init entities?
     entityManager->CreateEntity(
         new TransformComponent(glm::vec2(0.0f, 0.0f)),
-        new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 })
+        new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
+        new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4))
     );
 }
 
 void Game::Update() {
     // update game logic (run systems)
+    animatorSystem->Update(time.DeltaTime());
     //EntityManager.RunAnimationSystem(Time.DeltaTime());
 }
 

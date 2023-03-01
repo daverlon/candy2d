@@ -28,9 +28,9 @@ public:
                 }
             }
         }
-        std::cout << "_entityComponents size: " << _entityComponents.size() << std::endl;
+        std::cout << "_entityComponents size before: " << _entityComponents.size() << std::endl;
         _entityComponents.clear();
-        std::cout << "_entityComponents size: " << _entityComponents.size() << std::endl;
+        std::cout << "_entityComponents size after:  " << _entityComponents.size() << std::endl;
         std::cout << "[Entity Manager] Finished deleting entities" << std::endl;
     }
 
