@@ -30,6 +30,7 @@ public:
         }
         std::cout << "_entityComponents size before: " << _entityComponents.size() << std::endl;
         _entityComponents.clear();
+        // todo: check if deletedEntities should be cleared? it should be storing null pointers at this point anyway
         std::cout << "_entityComponents size after:  " << _entityComponents.size() << std::endl;
         std::cout << "[Entity Manager] Finished deleting entities" << std::endl;
     }
