@@ -18,7 +18,8 @@ public:
     }
 
     inline void TakeDamage(int amount = 1) {
-        _HP -= amount;
+        if (_HP > 0)
+            _HP -= amount;
     }
 
     inline void GainHealth(int amount = 1) {

@@ -32,7 +32,7 @@ public:
         auto player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
         auto playerTransform = player->GetComponent<TransformComponent>();
 
-        const float moveSpeed = 2.3f;
+        const float moveSpeed = 1.4f;
 
         for (auto& enemy : _entityManager->GetEntitiesWithComponent<EnemyAIComponent>()) {
 

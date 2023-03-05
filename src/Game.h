@@ -18,6 +18,7 @@
 #include "Systems/AnimatorSystem.h"
 #include "Systems/PlayerSystem.h"
 #include "Systems/EnemyAISystem.h"
+#include "Systems/ColliderSystem.h"
 
 class Game {
 private:
@@ -49,6 +50,8 @@ public:
 
     PlayerSystem* playerSystem;
     EnemyAISystem* enemyAISystem;
+
+    ColliderSystem* colliderSystem;
 
 
     void HandleEvents();
