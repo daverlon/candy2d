@@ -12,9 +12,11 @@
 #include "Components/TransformComponent.h"
 #include "Components/SpriteComponent.h"
 #include "Components/AnimatorComponent.h"
+#include "Components/HealthComponent.h"
 
 #include "Systems/SpriteSystem.h"
 #include "Systems/AnimatorSystem.h"
+#include "Systems/PlayerSystem.h"
 
 class Game {
 private:
@@ -43,6 +45,8 @@ public:
     // systems
     SpriteSystem* spriteSystem;
     AnimatorSystem* animatorSystem;
+
+    PlayerSystem* playerSystem;
 
 
     void HandleEvents();

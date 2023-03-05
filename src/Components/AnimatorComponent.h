@@ -10,6 +10,7 @@ private:
     float _timer;
     int _numFrames;
     int _curFrame;
+
 public:
     Animation(const SDL_Rect& startFrame, float delay, int numFrames) :
         _startFrame(startFrame), _delay(delay), _timer(0.0f), _numFrames(numFrames), _curFrame(0) {

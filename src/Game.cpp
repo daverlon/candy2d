@@ -155,19 +155,28 @@ void Game::Init() {
     spriteSystem = new SpriteSystem(_renderer, entityManager, _tileSet, &camera);
     animatorSystem = new AnimatorSystem(entityManager);
 
+    playerSystem = new PlayerSystem(entityManager, &camera);
+
     
     // init entities?
+
+
+    // create player
     entityManager->CreateEntity(
+        new PlayerComponent(),
         new TransformComponent(glm::vec2(0.0f, 0.0f)),
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
-        new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4))
+        new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
+        new HealthComponent(100)
     );
 
     entityManager->CreateEntity(
         new TransformComponent(glm::vec2(100.0f, 100.0f)),
         new SpriteComponent(SDL_Rect{ 432, 32, 16, 16 }),
-        new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4))
+        new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
+        new HealthComponent(100)
     );
+
 
 }
 
@@ -176,6 +185,7 @@ void Game::Init() {
 */
 void Game::Update() {
     // update game logic (run systems)
+    playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
 }
 
