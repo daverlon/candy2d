@@ -17,6 +17,7 @@
 #include "Systems/SpriteSystem.h"
 #include "Systems/AnimatorSystem.h"
 #include "Systems/PlayerSystem.h"
+#include "Systems/EnemyAISystem.h"
 
 class Game {
 private:
@@ -47,6 +48,7 @@ public:
     AnimatorSystem* animatorSystem;
 
     PlayerSystem* playerSystem;
+    EnemyAISystem* enemyAISystem;
 
 
     void HandleEvents();

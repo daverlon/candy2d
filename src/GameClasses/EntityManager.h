@@ -68,6 +68,17 @@ public:
         return entities;
     }
 
+    template<typename T>
+    Entity* GetFirstEntityWithComponent() {
+        auto it = _entityComponents.find(typeid(T));
+        if (it != _entityComponents.end()) {
+            for (auto entity : it->second) {
+                return entity;
+            }
+        }
+        return nullptr;
+    }
+
     void RemoveEntity(Entity* entity) {
         for (auto& component : entity->GetComponents()) {
             auto& entitySet = _entityComponents[typeid(*component)];

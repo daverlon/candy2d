@@ -62,6 +62,8 @@ Game::~Game() {
     std::cout << "Destroying up game objects..." << std::endl;
     delete spriteSystem;
     delete animatorSystem;
+    delete enemyAISystem;
+    delete playerSystem;
     delete entityManager;
 
     std::cout << "Destroying SDL...";
@@ -156,6 +158,7 @@ void Game::Init() {
     animatorSystem = new AnimatorSystem(entityManager);
 
     playerSystem = new PlayerSystem(entityManager, &camera);
+    enemyAISystem = new EnemyAISystem(entityManager);
 
     
     // init entities?
@@ -174,7 +177,8 @@ void Game::Init() {
         new TransformComponent(glm::vec2(100.0f, 100.0f)),
         new SpriteComponent(SDL_Rect{ 432, 32, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
-        new HealthComponent(100)
+        new HealthComponent(100),
+        new EnemyAIComponent()
     );
 
 
@@ -187,6 +191,7 @@ void Game::Update() {
     // update game logic (run systems)
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
+    enemyAISystem->Update(time.DeltaTime());
 }
 
 /*
