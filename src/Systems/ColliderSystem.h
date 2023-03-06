@@ -35,6 +35,8 @@ public:
         auto playerBounds = player->GetComponent<ColliderComponent>()->GetBounds();
         SDL_FRect playerRect = SDL_FRect{playerPos.x, playerPos.y, playerBounds.x, playerBounds.y};
 
+        //std::cout << RectToString(playerRect) << std::endl;
+
         for (auto& enemy : _entityManager->GetEntitiesWithComponent<EnemyAIComponent>()) {
             auto enemyPos = enemy->GetComponent<TransformComponent>()->GetPosition();
             auto enemyBounds = enemy->GetComponent<ColliderComponent>()->GetBounds();
@@ -47,4 +49,8 @@ public:
         }
     }
 
+    // draw collision bounds (debug)
+    void Render(SDL_Renderer* ren) {
+        
+    }
 };

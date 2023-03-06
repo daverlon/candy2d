@@ -9,6 +9,7 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimatorComponent.h"
+#include "../Components/ColliderComponent.h"
 
 class SpriteSystem {
 private:
@@ -34,21 +35,33 @@ public:
 
     void Render() {
         for (auto &c : _entityManager->GetEntitiesWithComponent<SpriteComponent>()) {
+            SpriteComponent* sprite = c->GetComponent<SpriteComponent>();
+            if (!sprite->GetActive()) continue;
 
             TransformComponent* transform = c->GetComponent<TransformComponent>();
-            SpriteComponent* sprite = c->GetComponent<SpriteComponent>();
+            ColliderComponent* collider = c->GetComponent<ColliderComponent>();
+            const glm::vec2 bounds = collider->GetBounds();
+
             // std::cout << RectToString(sprite->GetSrcRect()) << std::endl;
 
             glm::vec2 world_pos = transform->GetPosition();
-            glm::vec2 on_screen_position = _camera->WorldToScreen(glm::vec2(world_pos.x, world_pos.y));
 
-            glm::vec2 on_screen_size = glm::vec2(0.0f, 0.0f);
-            on_screen_size += glm::vec2(sprite->GetSrcRect().w, sprite->GetSrcRect().h);
-            on_screen_size *= _camera->GetZoom();
+            // draw collision bounds
+            SDL_FRect collision_bounds_world = SDL_FRect{world_pos.x, world_pos.y, bounds.x, bounds.y};
+            SDL_FRect collision_bounds_screen = SDL_FRect{};
+            _camera->RectWorldToScreen(&collision_bounds_world, &collision_bounds_screen);
+            SDL_RenderDrawRectF(_renderer, &collision_bounds_screen);
 
-            SDL_FRect on_screen_rect = Vec2Vec2toRect(on_screen_position, on_screen_size);
+            // draw sprite
+            SDL_Rect sprite_rect = sprite->GetSrcRect();
+            SDL_FRect sprite_bounds_world = SDL_FRect{world_pos.x, world_pos.y, (float)sprite_rect.w, (float)sprite_rect.h};
+            SDL_FRect sprite_bounds_screen = SDL_FRect{};
+            _camera->RectWorldToScreen(&sprite_bounds_world, &sprite_bounds_screen);
 
-            SDL_RenderCopyF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &on_screen_rect);
+            SDL_SetRenderDrawColor(_renderer, 255, 0, 255, 255);
+            SDL_RenderDrawRectF(_renderer, &sprite_bounds_screen);
+
+            SDL_RenderCopyF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen);
         }
     }
 };

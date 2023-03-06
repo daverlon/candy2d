@@ -18,3 +18,7 @@ extern inline std::string Vec2toString(const glm::ivec2 &v) {
 extern inline std::string RectToString(const SDL_Rect &r) {
     return "(" + std::to_string(r.x) + "," + std::to_string(r.y) + "," + std::to_string(r.w) + "," + std::to_string(r.h) + ")";
 }
+
+extern inline std::string RectToString(const SDL_FRect &r) {
+    return "(" + std::to_string(r.x) + "," + std::to_string(r.y) + "," + std::to_string(r.w) + "," + std::to_string(r.h) + ")";
+}
