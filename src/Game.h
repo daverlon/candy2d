@@ -12,7 +12,6 @@
 #include "Components/TransformComponent.h"
 #include "Components/SpriteComponent.h"
 #include "Components/AnimatorComponent.h"
-#include "Components/HealthComponent.h"
 
 #include "Systems/SpriteSystem.h"
 #include "Systems/AnimatorSystem.h"

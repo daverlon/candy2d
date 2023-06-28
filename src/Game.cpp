@@ -64,7 +64,7 @@ Game::~Game() {
     delete animatorSystem;
     delete enemyAISystem;
     delete playerSystem;
-    delete colliderSystem;
+    // delete colliderSystem;
 
 
     delete entityManager;
@@ -175,7 +175,7 @@ void Game::Init() {
         new TransformComponent(glm::vec2(0.0f, 0.0f)),
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
-        new HealthComponent(100),
+        // new HealthComponent(100),
         new ColliderComponent(glm::vec2(16, 16))
     );
 
@@ -183,7 +183,7 @@ void Game::Init() {
         new TransformComponent(glm::vec2(200.0f, 200.0f)),
         new SpriteComponent(SDL_Rect{ 432, 32, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
-        new HealthComponent(100),
+        // new HealthComponent(100),
         new EnemyAIComponent(),
         new ColliderComponent(glm::vec2(16, 16))
     );
@@ -208,6 +208,7 @@ void Game::Update() {
 void Game::Render() {
     // iterate through entities with sprite component
     spriteSystem->Render();
+    colliderSystem->Render(_renderer);
 
     // draw the mouse cursor
     SDL_SetRenderDrawColor(_renderer, 0, 255, 255, 255);

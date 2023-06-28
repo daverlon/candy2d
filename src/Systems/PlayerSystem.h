@@ -30,7 +30,7 @@ public:
 
     void Update(const float &dt, const Uint8* keyboardState) {
 
-        const float moveSpeed = 8.5f;
+        // handle player movement
 
         for (auto& player : _entityManager->GetEntitiesWithComponent<PlayerComponent>()) {
 

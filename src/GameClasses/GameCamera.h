@@ -64,6 +64,7 @@ public:
     }
 
     // assumes that 'in' is world position + world size (16x16 sprites for example)
+    // todo: consider renaming this to FRectWorldToScreen (specifics are important!)
     inline void RectWorldToScreen(const SDL_FRect* in, SDL_FRect* out) {
         glm::vec2 xy = WorldToScreen(glm::vec2(in->x, in->y));
         glm::vec2 wh = glm::vec2(out->w, out->h) * _zoom;
