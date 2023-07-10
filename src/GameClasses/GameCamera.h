@@ -67,7 +67,9 @@ public:
     // todo: consider renaming this to FRectWorldToScreen (specifics are important!)
     inline void RectWorldToScreen(const SDL_FRect* in, SDL_FRect* out) {
         glm::vec2 xy = WorldToScreen(glm::vec2(in->x, in->y));
-        glm::vec2 wh = glm::vec2(in->w, in->h) * _zoom;
+        // glm::vec2 wh = glm::vec2(in->w, in->h) * _zoom;
+        glm::vec2 wh = glm::vec2(in->w, in->h) * (GetZoom()/ GetOriginalZoom());
+
         out->x = xy.x;
         out->y = xy.y;
         out->w = wh.x;

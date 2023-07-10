@@ -48,7 +48,7 @@ Game::Game() {
         glm::vec2(100.0f, 0.0f),
         GetWindowSize(),
         glm::vec2(viewPort.GetPosition() + glm::vec2(GetWindowSize()/2)),
-        5.0f, 5.0f
+        5.0f, 20.0f
     );
 
     SetRunning(true);
@@ -163,7 +163,8 @@ void Game::Init() {
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
         // new HealthComponent(100),
-        new ColliderComponent(glm::vec2(16.0f, 16.0f))
+        // new ColliderComponent(glm::vec2(12.0f, 12.0f), glm::vec2(3.0f, 3.0f))
+        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f))
     );
 
     entityManager->CreateEntity(
@@ -172,7 +173,7 @@ void Game::Init() {
         new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
         // new HealthComponent(100),
         new EnemyAIComponent(),
-        new ColliderComponent(glm::vec2(16.0f, 16.0f))
+        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f))
     );
 }
 
