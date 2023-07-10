@@ -30,3 +30,9 @@ TODO
 
     action attacks
 
+
+
+SOME KNOWN ISSUES
+
+    camera does not automatically center when the window size changes
+    
