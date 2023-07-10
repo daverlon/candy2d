@@ -36,10 +36,7 @@ public:
         for (auto& player : _entityManager->GetEntitiesWithComponent<PlayerComponent>()) {
 
             auto transform = player->GetComponent<TransformComponent>();
-            if (transform == nullptr) {
-                std::cout << "Error: Player transform component is nullptr." << std::endl;
-                break;
-            }
+            assert(transform != nullptr);
 
             glm::vec2 playerMovement = glm::vec2(
                 (keyboardState[SDL_SCANCODE_D] * (-ms*dt)) - 
