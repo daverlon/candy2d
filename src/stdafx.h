@@ -27,3 +27,11 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+
+enum SPRITE_LAYERS {
+    SPRITE_LAYER_BACKGROUND,
+    SPRITE_LAYER_YSORT,
+    SPRITE_LAYER_UI
+};
+

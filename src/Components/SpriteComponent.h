@@ -6,9 +6,10 @@
 class SpriteComponent : public Component {
 private:
     SDL_Rect _srcRect; // assumes that the texture is on a pre determined texture atlas
+    int _spriteLayer;
 public:
-    SpriteComponent(SDL_Rect srcRect = SDL_Rect{0, 0, 0, 0}) : 
-        _srcRect(srcRect) {
+    SpriteComponent(SDL_Rect srcRect = SDL_Rect{0, 0, 0, 0}, int spriteLayer = SPRITE_LAYER_YSORT) : 
+        _srcRect(srcRect), _spriteLayer(spriteLayer) {
             std::cout << "        SpriteComponent()" << this << std::endl;
         }
 
@@ -19,7 +20,9 @@ public:
     const SDL_Rect& GetSrcRect() const { return _srcRect; }    
     void SetSrcRect(SDL_Rect srcRect) { _srcRect = srcRect; }
 
-    void SetSrcRectX(int x) {
+    inline void SetSrcRectX(int x) {
         _srcRect.x = x;
     }
+
+    inline int GetLayer() { return _spriteLayer; }
 };

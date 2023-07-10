@@ -113,14 +113,15 @@ void Game::HandleEvents() {
             case SDLK_ESCAPE:
                 SetRunning(false);
                 break;
-            case SDLK_MINUS:
-                camera.AddZoom(-1.0f);
-                break;
-            case SDLK_EQUALS:
-                camera.AddZoom(1.0f);
-                break;
             default:
                 break;
+            }
+            break;
+        case SDL_MOUSEWHEEL:
+            if (ev.wheel.y > 0) {
+                camera.AddZoom(1.0f);
+            } else if (ev.wheel.y < 0) {
+                camera.AddZoom(-1.0f);
             }
             break;
         default:
@@ -163,29 +164,29 @@ void Game::Init() {
     // create player
     entityManager->CreateEntity(
         new PlayerComponent(),
-        new TransformComponent(glm::vec2(0.0f, 0.0f)),
+        new TransformComponent(glm::vec2(30.0f, 60.0f), glm::vec2(8.0f, 14.0f)),
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
         // new HealthComponent(100),
-        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), false, false)
+        new ColliderComponent(glm::vec4(3.0f, 8.0f, 10.0f, 5.0f), false, false)
     );
 
-    // create enemy
-    for (int i = 0; i < 3; i++)
-    entityManager->CreateEntity(
-        new TransformComponent(glm::vec2(200.0f + 25.0f * i, 200.0f)),
-        new SpriteComponent(SDL_Rect{ 432, 32, 16, 16 }),
-        new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
-        // new HealthComponent(100),
-        new EnemyAIComponent(),
-        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), false, false)
-    );
+    // create enemies
+    for (int i = 0; i < 0; i++)
+        entityManager->CreateEntity(
+            new TransformComponent(glm::vec2(200.0f + 25.0f * i, 200.0f)),
+            new SpriteComponent(SDL_Rect{ 432, 32, 16, 16 }),
+            new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
+            // new HealthComponent(100),
+            new EnemyAIComponent(),
+            new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), false, false)
+        );
 
     // crate 288 298 16 22
     entityManager->CreateEntity(
-        new TransformComponent(glm::vec2(30.0f, 30.0f)),
+        new TransformComponent(glm::vec2(30.0f, 30.0f), glm::vec2(8.0f, 19.0f)),
         new SpriteComponent(SDL_Rect{288, 298, 16, 22}),
-        new ColliderComponent(glm::vec4(0.0f, 0.0f, 16.0f, 22.0f), false, false)
+        new ColliderComponent(glm::vec4(1.0f, 5.0f, 14.0f, 17.0f), false, false)
     );
 
     // chest_empty_open_anim 304 288 16 16 3
@@ -195,6 +196,32 @@ void Game::Init() {
         new AnimatorComponent(new Animation(SDL_Rect{304, 288, 16, 16}, 0.1f, 3)),
         new ColliderComponent(glm::vec4(0.0f, 0.0f, 16.0f, 16.0f), false, true)
     );
+
+    // wall mid 32 16 16 16
+    // create wall
+    {
+        float xstart = -64.0f;
+        float ystart = -64.0f;
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                glm::vec2 pos = glm::vec2(xstart + x * 16.0f, ystart + y * 16.0f);
+                entityManager->CreateEntity(
+                    new TransformComponent(pos),
+                    new SpriteComponent(SDL_Rect{32, 16, 16, 16}, SPRITE_LAYER_BACKGROUND)
+                );
+            }
+        }
+    }
+
+    // add idle ogre
+    // ogre idle 16 320 32 32 4
+    entityManager->CreateEntity(
+        new TransformComponent(glm::vec2(40.0f, -30.0f), glm::vec2(16.0f, 29.0f)),
+        new SpriteComponent(SDL_Rect{16, 320, 32, 32}, SPRITE_LAYER_YSORT),
+        new AnimatorComponent(new Animation(SDL_Rect{16, 320, 32, 32}, 0.1f, 4)),
+        new ColliderComponent(glm::vec4(6.0f, 16.0f, 20.0f, 16.0f), false, true)
+    );
+
 }
 
 /*

@@ -77,8 +77,9 @@ public:
                     if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) {
                         std::cout << "Trigger collision between " << ent1 << " and " << ent2 << std::endl;
                     }
-                    else if (!collider1->GetIsTrigger() && !collider2->GetIsTrigger()) {
-                        // intersection between at least 1 solid object
+                    else if (!collider1->GetIsTrigger() && !collider2->GetIsTrigger())
+                    {
+                        // Intersection between at least 1 solid object
 
                         // Calculate the overlap between the rectangles
                         float overlapLeft = rect2Screen.x + rect2Screen.w - rect1Screen.x;
@@ -95,21 +96,21 @@ public:
                             // Separate horizontally
                             float separationX = overlapLeft < overlapRight ? -minOverlapX : minOverlapX;
 
-                            if (collider2->GetIsUnmoveable()) {
-                                // If the second entity is unmovable, adjust the position of the first entity only
-                                pos1.x += separationX;
+                            if (!collider1->GetIsUnmoveable() && !collider2->GetIsUnmoveable()) {
+                                // If both entities are movable, adjust the positions of both entities
+                                pos1.x += separationX * 0.5f;
+                                pos2.x -= separationX * 0.5f;
                                 transform1->MoveSlowly(pos1, 0.1f);
-                            }
-                            else if (collider1->GetIsUnmoveable()) {
-                                // If the first entity is unmovable, adjust the position of the second entity only
-                                pos2.x -= separationX;
                                 transform2->MoveSlowly(pos2, 0.1f);
                             }
-                            else {
-                                // If the second entity is moveable, adjust the positions of both entities
+                            else if (!collider1->GetIsUnmoveable()) {
+                                // If the first entity is movable, adjust the position of the first entity only
                                 pos1.x += separationX;
-                                pos2.x -= separationX;
                                 transform1->MoveSlowly(pos1, 0.1f);
+                            }
+                            else if (!collider2->GetIsUnmoveable()) {
+                                // If the second entity is movable, adjust the position of the second entity only
+                                pos2.x -= separationX;
                                 transform2->MoveSlowly(pos2, 0.1f);
                             }
                         }
@@ -117,21 +118,21 @@ public:
                             // Separate vertically
                             float separationY = overlapTop < overlapBottom ? -minOverlapY : minOverlapY;
 
-                            if (collider2->GetIsUnmoveable()) {
-                                // If the second entity is unmovable, adjust the position of the first entity only
-                                pos1.y += separationY;
+                            if (!collider1->GetIsUnmoveable() && !collider2->GetIsUnmoveable()) {
+                                // If both entities are movable, adjust the positions of both entities
+                                pos1.y += separationY * 0.5f;
+                                pos2.y -= separationY * 0.5f;
                                 transform1->MoveSlowly(pos1, 0.1f);
-                            }
-                            else if (collider1->GetIsUnmoveable()) {
-                                // If the first entity is unmovable, adjust the position of the second entity only
-                                pos2.x -= separationY;
                                 transform2->MoveSlowly(pos2, 0.1f);
                             }
-                            else {
-                                // If the second entity is moveable, adjust the positions of both entities
+                            else if (!collider1->GetIsUnmoveable()) {
+                                // If the first entity is movable, adjust the position of the first entity only
                                 pos1.y += separationY;
-                                pos2.y -= separationY;
                                 transform1->MoveSlowly(pos1, 0.1f);
+                            }
+                            else if (!collider2->GetIsUnmoveable()) {
+                                // If the second entity is movable, adjust the position of the second entity only
+                                pos2.y -= separationY;
                                 transform2->MoveSlowly(pos2, 0.1f);
                             }
                         }
