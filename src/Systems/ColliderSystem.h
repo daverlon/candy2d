@@ -100,6 +100,11 @@ public:
                                 pos1.x += separationX;
                                 transform1->MoveSlowly(pos1, 0.1f);
                             }
+                            else if (collider1->GetIsUnmoveable()) {
+                                // If the first entity is unmovable, adjust the position of the second entity only
+                                pos2.x -= separationX;
+                                transform2->MoveSlowly(pos2, 0.1f);
+                            }
                             else {
                                 // If the second entity is moveable, adjust the positions of both entities
                                 pos1.x += separationX;
@@ -116,6 +121,11 @@ public:
                                 // If the second entity is unmovable, adjust the position of the first entity only
                                 pos1.y += separationY;
                                 transform1->MoveSlowly(pos1, 0.1f);
+                            }
+                            else if (collider1->GetIsUnmoveable()) {
+                                // If the first entity is unmovable, adjust the position of the second entity only
+                                pos2.x -= separationY;
+                                transform2->MoveSlowly(pos2, 0.1f);
                             }
                             else {
                                 // If the second entity is moveable, adjust the positions of both entities
