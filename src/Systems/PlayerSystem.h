@@ -31,7 +31,7 @@ public:
     void Update(const float &dt, const Uint8* keyboardState) {
 
         // handle player movement
-        const float ms = 150.0f;
+        const float ms = 120.0f;
 
         for (auto& player : _entityManager->GetEntitiesWithComponent<PlayerComponent>()) {
 
@@ -39,14 +39,22 @@ public:
             assert(transform != nullptr);
 
             glm::vec2 playerMovement = glm::vec2(
-                (keyboardState[SDL_SCANCODE_D] * (-ms*dt)) - 
-                (keyboardState[SDL_SCANCODE_A] * (-ms*dt)),
+                keyboardState[SDL_SCANCODE_A] - 
+                keyboardState[SDL_SCANCODE_D],
 
-                (keyboardState[SDL_SCANCODE_S] * (-ms*dt)) -
-                (keyboardState[SDL_SCANCODE_W] * (-ms*dt))
+                keyboardState[SDL_SCANCODE_W] - 
+                keyboardState[SDL_SCANCODE_S]
             );
 
-            transform->Translate(playerMovement);
+            if (playerMovement.x != 0.0f && playerMovement.y != 0.0f) {
+                playerMovement = glm::normalize(playerMovement);
+            }
+
+            playerMovement *= ms * dt;
+
+
+            // transform->Translate(playerMovement);
+            transform->MoveSlowly(transform->GetPosition() + playerMovement, 1.0f);
 
             _camera->MoveSlowly(transform->GetPosition() - glm::vec2(8.0f, 8.0f), 0.3f);
         }
