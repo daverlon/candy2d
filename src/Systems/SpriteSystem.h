@@ -11,6 +11,8 @@
 #include "../Components/AnimatorComponent.h"
 #include "../Components/ColliderComponent.h"
 
+#include "../Utils/DebugUtils.h"
+
 class SpriteSystem {
 private:
     SDL_Renderer* _renderer;
@@ -39,18 +41,10 @@ public:
             if (!sprite->GetActive()) continue;
 
             TransformComponent* transform = c->GetComponent<TransformComponent>();
-            ColliderComponent* collider = c->GetComponent<ColliderComponent>();
-            const glm::vec2 bounds = collider->GetBounds();
 
             // std::cout << RectToString(sprite->GetSrcRect()) << std::endl;
 
             glm::vec2 world_pos = transform->GetPosition();
-
-            // draw collision bounds
-            SDL_FRect collision_bounds_world = SDL_FRect{world_pos.x, world_pos.y, bounds.x, bounds.y};
-            SDL_FRect collision_bounds_screen = SDL_FRect{};
-            _camera->RectWorldToScreen(&collision_bounds_world, &collision_bounds_screen);
-            SDL_RenderDrawRectF(_renderer, &collision_bounds_screen);
 
             // draw sprite
             SDL_Rect sprite_rect = sprite->GetSrcRect();

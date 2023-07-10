@@ -69,16 +69,12 @@ public:
             auto enemyCollider = enemy->GetComponent<ColliderComponent>();
             if (enemyCollider == nullptr) continue;
             auto enemyBounds = enemyCollider->GetBounds();
-
+           
             // world rect
             SDL_FRect enemyRect = SDL_FRect{enemyPos.x, enemyPos.y, enemyBounds.x, enemyBounds.y};
-
             
             SDL_FRect enemyRectOnScreen = SDL_FRect{};
             _camera->RectWorldToScreen(&enemyRect, &enemyRectOnScreen);
-
-
-
 
             SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
             SDL_RenderDrawRectF(ren, &enemyRectOnScreen);

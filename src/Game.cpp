@@ -131,19 +131,6 @@ void Game::HandleEvents() {
 */
 void Game::UpdateKeyboardState() {
     _keyboardState = SDL_GetKeyboardState(NULL);
-
-    if (GetKeyboardState()[SDL_SCANCODE_E]) std::cout << "Holding E." << std::endl;
-
-    const float ms = 150.0f;
-
-    glm::vec2 cam_movement = glm::vec2(
-        (GetKeyboardState()[SDL_SCANCODE_RIGHT] * (-ms*time.DeltaTime())) -
-        (GetKeyboardState()[SDL_SCANCODE_LEFT]  * (-ms*time.DeltaTime())),
-
-        (GetKeyboardState()[SDL_SCANCODE_DOWN]  * (-ms*time.DeltaTime())) -
-        (GetKeyboardState()[SDL_SCANCODE_UP]    * (-ms*time.DeltaTime()))
-    );
-    camera.Translate(cam_movement);
 }
 
 /*
@@ -176,7 +163,7 @@ void Game::Init() {
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
         // new HealthComponent(100),
-        new ColliderComponent(glm::vec2(16, 16))
+        new ColliderComponent(glm::vec2(32, 32))
     );
 
     entityManager->CreateEntity(
@@ -187,8 +174,6 @@ void Game::Init() {
         new EnemyAIComponent(),
         new ColliderComponent(glm::vec2(16, 16))
     );
-
-
 }
 
 /*

@@ -32,7 +32,7 @@ public:
         auto player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
         auto playerTransform = player->GetComponent<TransformComponent>();
 
-        const float moveSpeed = 1.4f;
+        const float moveSpeed = 0.75f;
 
         for (auto& enemy : _entityManager->GetEntitiesWithComponent<EnemyAIComponent>()) {
 
@@ -40,7 +40,9 @@ public:
 
             auto delta = playerTransform->GetPosition() - transform->GetPosition();
 
-            transform->Translate(delta * moveSpeed * dt);
+            auto movement = delta * moveSpeed * dt;
+
+            transform->Translate(movement);
 
             // todo: collider component and collision detection to trigger damage taken
         }

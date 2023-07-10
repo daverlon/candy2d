@@ -31,23 +31,25 @@ public:
     void Update(const float &dt, const Uint8* keyboardState) {
 
         // handle player movement
+        const float ms = 150.0f;
 
         for (auto& player : _entityManager->GetEntitiesWithComponent<PlayerComponent>()) {
 
             auto transform = player->GetComponent<TransformComponent>();
+            if (transform == nullptr) {
+                std::cout << "Error: Player transform component is nullptr." << std::endl;
+                break;
+            }
 
-
-            const float ms = 150.0f;
             glm::vec2 playerMovement = glm::vec2(
-                (keyboardState[SDL_SCANCODE_RIGHT] * (-ms*dt)) - 
-                    (keyboardState[SDL_SCANCODE_LEFT]  * (-ms*dt)),
+                (keyboardState[SDL_SCANCODE_D] * (-ms*dt)) - 
+                (keyboardState[SDL_SCANCODE_A] * (-ms*dt)),
 
-                (keyboardState[SDL_SCANCODE_DOWN]  * (-ms*dt)) - 
-                    (keyboardState[SDL_SCANCODE_UP]    * (-ms*dt))
+                (keyboardState[SDL_SCANCODE_S] * (-ms*dt)) -
+                (keyboardState[SDL_SCANCODE_W] * (-ms*dt))
             );
 
             transform->Translate(playerMovement);
-
 
             _camera->MoveSlowly(transform->GetPosition() - glm::vec2(16.0f, 16.0f), 0.08f);
         }
