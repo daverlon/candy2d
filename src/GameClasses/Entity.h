@@ -54,7 +54,7 @@ public:
                 return;
             }
         }
-        std::cout << "Error: Tried to remove Component that was not found." << std::endl;
+        // std::cout << "Error: Tried to remove Component that was not found." << std::endl;
     }
 
     template<typename T>
@@ -65,7 +65,7 @@ public:
                 return t;
             }
         }
-        std::cout << "Error: Tried to access a Component that does not exist." << std::endl;
+        // std::cout << "Error: Tried to access a Component that does not exist." << std::endl;
         return nullptr;
     }
     

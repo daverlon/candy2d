@@ -166,7 +166,7 @@ void Game::Init() {
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
         // new HealthComponent(100),
-        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f))
+        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), true)
     );
 
     entityManager->CreateEntity(
@@ -175,8 +175,24 @@ void Game::Init() {
         new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
         // new HealthComponent(100),
         new EnemyAIComponent(),
-        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f))
+        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), true)
     );
+
+    // crate 288 298 16 22
+    entityManager->CreateEntity(
+        new TransformComponent(glm::vec2(30.0f, 30.0f)),
+        new SpriteComponent(SDL_Rect{288, 298, 16, 22}),
+        new ColliderComponent(glm::vec4(0.0f, 0.0f, 16.0f, 22.0f), false, false)
+    );
+
+    // chest_empty_open_anim 304 288 16 16 3
+    entityManager->CreateEntity(
+        new TransformComponent(glm::vec2(30.0f, 60.0f)),
+        new SpriteComponent(SDL_Rect{304, 288, 16, 16}),
+        new AnimatorComponent(new Animation(SDL_Rect{304, 288, 16, 16}, 0.1f, 3)),
+        new ColliderComponent(glm::vec4(0.0f, 0.0f, 16.0f, 16.0f), false, true)
+    );
+
 }
 
 /*
