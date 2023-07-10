@@ -8,9 +8,10 @@ private:
     SDL_Rect _srcRect; // assumes that the texture is on a pre determined texture atlas
     int _spriteLayer;
     bool _flipped;
+    double _angle; // for projectiles and such, for rotations
 public:
     SpriteComponent(SDL_Rect srcRect = SDL_Rect{0, 0, 0, 0}, int spriteLayer = SPRITE_LAYER_YSORT) : 
-        _srcRect(srcRect), _spriteLayer(spriteLayer), _flipped(false) {
+        _srcRect(srcRect), _spriteLayer(spriteLayer), _flipped(false), _angle(0) {
             std::cout << "        SpriteComponent()" << this << std::endl;
         }
 
@@ -29,4 +30,9 @@ public:
 
     inline bool GetFlipped() { return _flipped; }
     inline void Flip() { _flipped = !_flipped; }
+
+    inline const double GetAngle() const { return _angle; }
+    inline void SetAngle(const double angle) { _angle = angle; }
+
+
 };

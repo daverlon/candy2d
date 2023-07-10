@@ -104,11 +104,10 @@ public:
                 SDL_SetRenderDrawColor(_renderer, 255, 0, 255, 255);
                 SDL_RenderDrawRectF(_renderer, &sprite_bounds_screen);
 
-
                 if (sprite->GetFlipped())
-                    SDL_RenderCopyExF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen, 0, NULL, SDL_FLIP_HORIZONTAL);
+                    SDL_RenderCopyExF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen, sprite->GetAngle(), NULL, SDL_FLIP_HORIZONTAL);
                 else
-                    SDL_RenderCopyF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen);
+                    SDL_RenderCopyExF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen, sprite->GetAngle(), NULL, SDL_FLIP_NONE);
 
                 // render origin (debug)
                 SDL_SetRenderDrawColor(_renderer, 0, 255, 0, 255);

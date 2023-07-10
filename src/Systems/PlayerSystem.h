@@ -37,6 +37,7 @@ public:
 
             auto spr = player->GetComponent<SpriteComponent>();
             assert(spr != nullptr);
+            // spr->SetAngle(spr->GetAngle()+1); //spin!
 
             auto transform = player->GetComponent<TransformComponent>();
             assert(transform != nullptr);
@@ -57,7 +58,6 @@ public:
             }
 
             playerMovement *= ms * dt;
-
 
             // transform->Translate(playerMovement);
             transform->MoveSlowly(transform->GetPosition() + playerMovement, 1.0f);
