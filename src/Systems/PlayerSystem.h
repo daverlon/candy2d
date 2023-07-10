@@ -48,7 +48,7 @@ public:
 
             transform->Translate(playerMovement);
 
-            _camera->MoveSlowly(transform->GetPosition() - glm::vec2(16.0f, 16.0f), 0.08f);
+            _camera->MoveSlowly(transform->GetPosition() - glm::vec2(8.0f, 8.0f), 0.3f);
         }
     }
 };

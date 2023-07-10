@@ -48,7 +48,7 @@ Game::Game() {
         glm::vec2(100.0f, 0.0f),
         GetWindowSize(),
         glm::vec2(viewPort.GetPosition() + glm::vec2(GetWindowSize()/2)),
-        5.0f, 20.0f
+        5.0f, 25.0f
     );
 
     SetRunning(true);
@@ -106,6 +106,9 @@ void Game::HandleEvents() {
             }
         case SDL_KEYDOWN:
             switch (ev.key.keysym.sym) {
+            case SDLK_SPACE:
+                TogglePause(); 
+                break;
             case SDLK_ESCAPE:
                 SetRunning(false);
                 break;
@@ -163,7 +166,6 @@ void Game::Init() {
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
         // new HealthComponent(100),
-        // new ColliderComponent(glm::vec2(12.0f, 12.0f), glm::vec2(3.0f, 3.0f))
         new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f))
     );
 
@@ -224,7 +226,8 @@ void Game::Run() {
         UpdateKeyboardState();
 
         // process game logic
-        Update();
+        if (!_paused)
+            Update();
 
         // clear the renderer before copying
         SDL_SetRenderDrawColor(_renderer, 100, 100, 100, 255);

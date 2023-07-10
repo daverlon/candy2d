@@ -27,6 +27,7 @@ private:
     SDL_Renderer* _renderer = nullptr;
 
     bool _running = false;
+    bool _paused = false;
 
     SDL_Texture* _tileSet = nullptr;
 
@@ -65,6 +66,7 @@ public:
 
     inline bool GetRunning() { return _running; } 
     inline void SetRunning(bool b) { _running = b; }
+    inline void TogglePause() { _paused = !_paused; }
 
     inline void UpdateWindowSize() { SDL_GetWindowSize(_window, &_windowSize.x, &_windowSize.y ); }
     inline glm::ivec2 GetWindowSize() { return _windowSize; }
