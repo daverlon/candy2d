@@ -68,6 +68,9 @@ public:
     inline void SetRunning(bool b) { _running = b; }
     inline void TogglePause() { _paused = !_paused; }
 
-    inline void UpdateWindowSize() { SDL_GetWindowSize(_window, &_windowSize.x, &_windowSize.y ); }
+    inline void UpdateWindowSize() { 
+        SDL_GetWindowSize(_window, &_windowSize.x, &_windowSize.y ); 
+        std::cout << "Window size updated to: " << Vec2toString(_windowSize) << std::endl;
+        }
     inline glm::ivec2 GetWindowSize() { return _windowSize; }
 };

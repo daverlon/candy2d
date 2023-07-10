@@ -99,9 +99,10 @@ void Game::HandleEvents() {
                 || ev.window.event == SDL_WINDOWEVENT_RESTORED 
                 || ev.window.event == SDL_WINDOWEVENT_MAXIMIZED
                 || ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                    std::cout << "Window event detected." << std::endl;
                     UpdateWindowSize();
                     viewPort = GameViewPort(glm::ivec2(GetWindowSize()), glm::vec2(0.0f, 0.0f));
-                    //CorrectViewPortSize();
+                    camera.SetSize(GetWindowSize());
                     break;
             }
         case SDL_KEYDOWN:
@@ -262,7 +263,7 @@ void Game::Run() {
             static Uint64 cur;
             const int delay = 20;
             if (cur >= delay) {
-                std::cout << "Tick: " << SDL_GetTicks64() << ", DT: " << time.DeltaTime() << ", FPS: " << time.FPS() << std::endl;
+                // std::cout << "Tick: " << SDL_GetTicks64() << ", DT: " << time.DeltaTime() << ", FPS: " << time.FPS() << std::endl;
                 cur = 0;
             }
             else cur++;
