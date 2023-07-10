@@ -173,8 +173,10 @@ public:
             SDL_FRect entRectScreen = {};
             _camera->RectWorldToScreen(&entRect, &entRectScreen);
 
-            SDL_SetRenderDrawColor(renderer, 255, 255, 100, 30);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 100);
             SDL_RenderFillRectF(renderer, &entRectScreen);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderDrawRectF(renderer, &entRectScreen);
         }
     }
 };
