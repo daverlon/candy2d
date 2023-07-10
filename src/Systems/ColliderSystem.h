@@ -14,7 +14,6 @@ class ColliderSystem {
 private:
     EntityManager* _entityManager;
     GameCamera* _camera; // for zoom
-
     
 public:
     ColliderSystem(EntityManager* entityManager, GameCamera* camera) :
@@ -25,31 +24,33 @@ public:
         std::cout << "~ColliderSystem()" << this << std::endl;
     }
 
+    // pass render (for temporary debugging)
     void Update() {
         
         // detects if enemies are colliding with the player
         Entity* player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>(); 
         // auto playerHealth = player->GetComponent<HealthComponent>();
-
         auto playerPos = player->GetComponent<TransformComponent>()->GetPosition();
         auto playerBounds = player->GetComponent<ColliderComponent>()->GetBounds();
         SDL_FRect playerRect = SDL_FRect{playerPos.x, playerPos.y, playerBounds.x, playerBounds.y};
-
-        //std::cout << RectToString(playerRect) << std::endl;
-
+        SDL_FRect playerRectScreen = {};
+        _camera->RectWorldToScreen(&playerRect, &playerRectScreen);
+        
         for (auto& enemy : _entityManager->GetEntitiesWithComponent<EnemyAIComponent>()) {
 
             auto enemyTransform = enemy->GetComponent<TransformComponent>();
-            if (enemyTransform == nullptr) continue;
+            assert(enemyTransform != nullptr);
             auto enemyPos = enemyTransform->GetPosition();
 
             auto enemyCollider = enemy->GetComponent<ColliderComponent>();
-            if (enemyCollider == nullptr) continue;
+            assert(enemyCollider != nullptr);
             auto enemyBounds = enemyCollider->GetBounds();
 
-            SDL_FRect enemyRect = SDL_FRect{enemyPos.x, enemyPos.y, enemyBounds.x, enemyBounds.y};
+            SDL_FRect enemyRect = (SDL_FRect){enemyPos.x, enemyPos.y, enemyBounds.x, enemyBounds.y};
+            SDL_FRect enemyRectScreen = {};
+            _camera->RectWorldToScreen(&enemyRect, &enemyRectScreen);
 
-            if (SDL_HasIntersectionF(&playerRect, &enemyRect)) {
+            if (SDL_HasIntersectionF(&enemyRectScreen, &playerRectScreen)) {
                 // playerHealth->TakeDamage();
                 // std::cout << "Take damage! " << playerHealth->GetHealth() << " hp" << std::endl;
                 std::cout << "Collision between player and " << enemy << std::endl;
@@ -58,26 +59,37 @@ public:
         }
     }
 
-    // draw collision bounds (debug)
-    void Render(SDL_Renderer* ren) {
+    // (debug) render collision bounds
+    void Render(SDL_Renderer* renderer) {
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
+        // render player collision bounds
+        Entity* player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>(); 
+        auto playerPos = player->GetComponent<TransformComponent>()->GetPosition();
+        auto playerBounds = player->GetComponent<ColliderComponent>()->GetBounds();
+        SDL_FRect playerRect = SDL_FRect{playerPos.x, playerPos.y, playerBounds.x, playerBounds.y};
+        SDL_FRect playerRectScreen = {}; 
+        _camera->RectWorldToScreen(&playerRect, &playerRectScreen);
+        SDL_SetRenderDrawColor(renderer, 0, 255, 255, 30);
+        SDL_RenderFillRectF(renderer, &playerRectScreen);
+
+        // render enemies collision bounds
         for (auto& enemy : _entityManager->GetEntitiesWithComponent<EnemyAIComponent>()) {
+
             auto enemyTransform = enemy->GetComponent<TransformComponent>();
-            if (enemyTransform == nullptr) continue;
+            assert(enemyTransform != nullptr);
             auto enemyPos = enemyTransform->GetPosition();
 
             auto enemyCollider = enemy->GetComponent<ColliderComponent>();
-            if (enemyCollider == nullptr) continue;
+            assert(enemyCollider != nullptr);
             auto enemyBounds = enemyCollider->GetBounds();
-           
-            // world rect
-            SDL_FRect enemyRect = SDL_FRect{enemyPos.x, enemyPos.y, enemyBounds.x, enemyBounds.y};
-            
-            SDL_FRect enemyRectOnScreen = SDL_FRect{};
-            _camera->RectWorldToScreen(&enemyRect, &enemyRectOnScreen);
 
-            SDL_SetRenderDrawColor(ren, 255, 0, 0, 255);
-            SDL_RenderDrawRectF(ren, &enemyRectOnScreen);
+            SDL_FRect enemyRect = (SDL_FRect){enemyPos.x, enemyPos.y, enemyBounds.x, enemyBounds.y};
+            SDL_FRect enemyRectScreen = {};
+            _camera->RectWorldToScreen(&enemyRect, &enemyRectScreen);
+
+            SDL_SetRenderDrawColor(renderer, 255, 255, 100, 30);
+            SDL_RenderFillRectF(renderer, &enemyRectScreen);
         }
     }
 };

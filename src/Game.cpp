@@ -163,7 +163,7 @@ void Game::Init() {
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
         // new HealthComponent(100),
-        new ColliderComponent(glm::vec2(32, 32))
+        new ColliderComponent(glm::vec2(16.0f, 16.0f))
     );
 
     entityManager->CreateEntity(
@@ -172,7 +172,7 @@ void Game::Init() {
         new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
         // new HealthComponent(100),
         new EnemyAIComponent(),
-        new ColliderComponent(glm::vec2(16, 16))
+        new ColliderComponent(glm::vec2(16.0f, 16.0f))
     );
 }
 
