@@ -162,13 +162,14 @@ void Game::Init() {
 
 
     // create player
+    // wizard_m_run 192 164 16 28 4
     entityManager->CreateEntity(
         new PlayerComponent(),
-        new TransformComponent(glm::vec2(30.0f, 60.0f), glm::vec2(8.0f, 14.0f)),
-        new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
-        new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
+        new TransformComponent(glm::vec2(30.0f, 60.0f), glm::vec2(8.0f, 24.0f)),
+        new SpriteComponent(SDL_Rect{ 192, 164, 16, 28 }),
+        new AnimatorComponent(new Animation(SDL_Rect{192, 164, 16, 28}, 0.09f, 4)),
         // new HealthComponent(100),
-        new ColliderComponent(glm::vec4(3.0f, 8.0f, 10.0f, 5.0f), false, false)
+        new ColliderComponent(glm::vec4(3.0f, 14.0f, 10.0f, 13.0f), false, false)
     );
 
     // create enemies
@@ -191,10 +192,10 @@ void Game::Init() {
 
     // chest_empty_open_anim 304 288 16 16 3
     entityManager->CreateEntity(
-        new TransformComponent(glm::vec2(30.0f, 60.0f)),
+        new TransformComponent(glm::vec2(30.0f, 60.0f), glm::vec2(8.0f, 13.0f)),
         new SpriteComponent(SDL_Rect{304, 288, 16, 16}),
         new AnimatorComponent(new Animation(SDL_Rect{304, 288, 16, 16}, 0.1f, 3)),
-        new ColliderComponent(glm::vec4(0.0f, 0.0f, 16.0f, 16.0f), false, true)
+        new ColliderComponent(glm::vec4(1.0f, 5.0f, 14.0f, 11.0f), false, true)
     );
 
     // wall mid 32 16 16 16
@@ -218,8 +219,8 @@ void Game::Init() {
     entityManager->CreateEntity(
         new TransformComponent(glm::vec2(40.0f, -30.0f), glm::vec2(16.0f, 29.0f)),
         new SpriteComponent(SDL_Rect{16, 320, 32, 32}, SPRITE_LAYER_YSORT),
-        new AnimatorComponent(new Animation(SDL_Rect{16, 320, 32, 32}, 0.1f, 4)),
-        new ColliderComponent(glm::vec4(6.0f, 16.0f, 20.0f, 16.0f), false, true)
+        new AnimatorComponent(new Animation(SDL_Rect{16, 320, 32, 32}, 0.2f, 4)),
+        new ColliderComponent(glm::vec4(6.0f, 16.f, 20.0f, 10.0f), false, true)
     );
 
 }

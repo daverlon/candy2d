@@ -35,6 +35,9 @@ public:
 
         for (auto& player : _entityManager->GetEntitiesWithComponent<PlayerComponent>()) {
 
+            auto spr = player->GetComponent<SpriteComponent>();
+            assert(spr != nullptr);
+
             auto transform = player->GetComponent<TransformComponent>();
             assert(transform != nullptr);
 
@@ -45,6 +48,9 @@ public:
                 keyboardState[SDL_SCANCODE_W] - 
                 keyboardState[SDL_SCANCODE_S]
             );
+
+            if (playerMovement.x < 0 && spr->GetFlipped()) { spr->Flip(); }
+            else if (playerMovement.x > 0 && !spr->GetFlipped()) { spr->Flip(); }
 
             if (playerMovement.x != 0.0f && playerMovement.y != 0.0f) {
                 playerMovement = glm::normalize(playerMovement);

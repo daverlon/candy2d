@@ -7,9 +7,10 @@ class SpriteComponent : public Component {
 private:
     SDL_Rect _srcRect; // assumes that the texture is on a pre determined texture atlas
     int _spriteLayer;
+    bool _flipped;
 public:
     SpriteComponent(SDL_Rect srcRect = SDL_Rect{0, 0, 0, 0}, int spriteLayer = SPRITE_LAYER_YSORT) : 
-        _srcRect(srcRect), _spriteLayer(spriteLayer) {
+        _srcRect(srcRect), _spriteLayer(spriteLayer), _flipped(false) {
             std::cout << "        SpriteComponent()" << this << std::endl;
         }
 
@@ -25,4 +26,7 @@ public:
     }
 
     inline int GetLayer() { return _spriteLayer; }
+
+    inline bool GetFlipped() { return _flipped; }
+    inline void Flip() { _flipped = !_flipped; }
 };

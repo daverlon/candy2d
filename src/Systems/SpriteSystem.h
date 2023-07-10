@@ -105,7 +105,10 @@ public:
                 SDL_RenderDrawRectF(_renderer, &sprite_bounds_screen);
 
 
-                SDL_RenderCopyF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen);
+                if (sprite->GetFlipped())
+                    SDL_RenderCopyExF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen, 0, NULL, SDL_FLIP_HORIZONTAL);
+                else
+                    SDL_RenderCopyF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen);
 
                 // render origin (debug)
                 SDL_SetRenderDrawColor(_renderer, 0, 255, 0, 255);
