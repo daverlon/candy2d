@@ -67,15 +67,17 @@ public:
 
                 if (SDL_HasIntersectionF(&rect1Screen, &rect2Screen)) {
                     // intersection between 2 non-solid objects (triggers)
-                    if (collider1->GetIsTrigger() && collider2->GetIsTrigger()) {
-                        std::cout << "Collision between " << ent1 << " and " << ent2 << std::endl;
-                        if ((ent1 == player && ent2->GetComponent<EnemyAIComponent>() != nullptr) ||
-                            (ent2 == player && ent1->GetComponent<EnemyAIComponent>() != nullptr)) {
-                            std::cout << "Player damage!" << std::endl;
-                            // player take hp
-                        }
+
+                    // player collision with enemy
+                    if (((ent1 == player && ent2->GetComponent<EnemyAIComponent>() != nullptr)) 
+                        || (ent2 == player && ent1->GetComponent<EnemyAIComponent>() != nullptr)) {
+                        std::cout << "Player damage!" << std::endl;
                     }
-                    else { 
+
+                    if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) {
+                        std::cout << "Trigger collision between " << ent1 << " and " << ent2 << std::endl;
+                    }
+                    else if (!collider1->GetIsTrigger() && !collider2->GetIsTrigger()) {
                         // intersection between at least 1 solid object
 
                         // Calculate the overlap between the rectangles

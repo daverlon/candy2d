@@ -166,16 +166,18 @@ void Game::Init() {
         new SpriteComponent(SDL_Rect{ 432, 80, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 80, 16, 16}, 0.09f, 4)),
         // new HealthComponent(100),
-        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), true)
+        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), false, false)
     );
 
+    // create enemy
+    for (int i = 0; i < 3; i++)
     entityManager->CreateEntity(
-        new TransformComponent(glm::vec2(200.0f, 200.0f)),
+        new TransformComponent(glm::vec2(200.0f + 25.0f * i, 200.0f)),
         new SpriteComponent(SDL_Rect{ 432, 32, 16, 16 }),
         new AnimatorComponent(new Animation(SDL_Rect{432, 32, 16, 16}, 0.03f, 4)),
         // new HealthComponent(100),
         new EnemyAIComponent(),
-        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), true)
+        new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), false, false)
     );
 
     // crate 288 298 16 22
@@ -192,7 +194,6 @@ void Game::Init() {
         new AnimatorComponent(new Animation(SDL_Rect{304, 288, 16, 16}, 0.1f, 3)),
         new ColliderComponent(glm::vec4(0.0f, 0.0f, 16.0f, 16.0f), false, true)
     );
-
 }
 
 /*
