@@ -19,6 +19,8 @@ public:
     inline glm::vec2 GetPosition() const { return _position; }
     inline void SetPosition(glm::vec2 pos) { _position = pos; }
 
+    inline glm::vec2 GetCenterPosition() const { return _position + (glm::vec2(_size) / 2.0f); }
+
     inline glm::ivec2 GetMousePosition() const { return _mousePosition; }
     inline void SetMousePosition(glm::ivec2 pos) { _mousePosition = pos; }
 
