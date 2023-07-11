@@ -24,3 +24,6 @@ Goals:
     <li>Compile with the <b>./compile</b> script. (Requires g++)</li>
     <li>The executable gets outputted to the bin folder. It can be ran using the ./run script (must be in the same directory).</li>
 </ul>
+<br>
+<br>
+<img src="screenshot.png" width=700>
