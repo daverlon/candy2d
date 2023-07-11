@@ -3,6 +3,9 @@
 #include "../stdafx.h"
 #include "Entity.h"
 
+#define SHOWDEBUG
+
+
 // chatGPT!
 class EntityManager {
 private:
@@ -10,47 +13,65 @@ private:
 
 public:
     EntityManager() {
+#ifdef SHOWDEBUG
         std::cout << "EntityManager()" << std::endl;
+#endif
     }
 
     ~EntityManager() {
+#ifdef SHOWDEBUG
         std::cout << "~EntityManager()" << std::endl;
         std::cout << "[Entity Manager] Clearing entities container..." << std::endl;
+#endif
 
         std::unordered_set<Entity*> deletedEntities;
 
         for (auto& pair : _entityComponents) {
             for (auto entity : pair.second) {
                 if (deletedEntities.find(entity) == deletedEntities.end()) {
+#ifdef SHOWDEBUG
                     std::cout << "[Entity Manager] Deleting entity " << entity << "..." << std::endl;
+#endif
                     deletedEntities.insert(entity);
                     delete entity;
                 }
             }
         }
+#ifdef SHOWDEBUG
         std::cout << "_entityComponents size before: " << _entityComponents.size() << std::endl;
+#endif
         _entityComponents.clear();
         // todo: check if deletedEntities should be cleared? it should be storing null pointers at this point anyway
+#ifdef SHOWDEBUG
         std::cout << "_entityComponents size after:  " << _entityComponents.size() << std::endl;
         std::cout << "[Entity Manager] Finished deleting entities" << std::endl;
+#endif
     }
 
     template<typename... ComponentPtrs>
     Entity* CreateEntity(ComponentPtrs... componentPtrs) {
+#ifdef SHOWDEBUG
         std::cout << "Creating entity" << std::endl;
+#endif
         Entity* entity = new Entity();
         (entity->AddComponent(componentPtrs), ...);
+#ifdef SHOWDEBUG
         std::cout << "Entity created with " << sizeof...(ComponentPtrs) << " components." << std::endl;
         std::cout << std::endl;
+#endif
         AddEntity(entity);
         return entity;
     }
 
     void AddEntity(Entity* entity) {
+#ifdef SHOWDEBUG
         std::cout << "Adding entity " << entity << std::endl;
+#endif
         for (auto& component : entity->GetComponents()) {
             std::type_index type = typeid(*component);
+#ifdef SHOWDEBUG
             std::cout << "Adding component of type " << type.name() << std::endl;
+#endif
             _entityComponents[type].insert(entity);
         }
         std::cout << std::endl;
@@ -92,6 +113,7 @@ public:
     }
     
     void PrintEntitiesAndComponents() {
+#ifdef SHOWDEBUG
         std::cout << "------- Printing entities -------" << std::endl;
         std::cout << "_entityComponents size: " << _entityComponents.size() << std::endl;
         if (_entityComponents.empty()) {
@@ -108,9 +130,11 @@ public:
             }
         }
         std::cout << "----------------------------------" << std::endl;
+#endif
     }
 
     void PrintEntities() {
+#ifdef SHOWDEBUG
         std::cout << "Entities:" << std::endl;
         std::unordered_set<Entity*> printedEntities;
         for (auto& pair : _entityComponents) {
@@ -121,5 +145,6 @@ public:
                 }
             }
         }
+#endif
     }
 };
