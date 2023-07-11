@@ -144,6 +144,7 @@ public:
 
     // (debug) render collision bounds
     void Render(SDL_Renderer *renderer) {
+        return;
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         // render player collision bounds

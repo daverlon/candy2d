@@ -39,7 +39,7 @@ public:
             assert(spr != nullptr);
             // spr->SetAngle(spr->GetAngle()+1); //spin!
 
-            spr->SetAngle(spr->GetAngle() + 1);
+            // spr->SetAngle(spr->GetAngle() + 1);
 
             auto transform = player->GetComponent<TransformComponent>();
             assert(transform != nullptr);

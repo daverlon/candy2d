@@ -19,6 +19,8 @@
 #include "Systems/EnemyAISystem.h"
 #include "Systems/ColliderSystem.h"
 
+#include "Tilemap/Tilemap.h"
+
 class Game {
 private:
     SDL_Window* _window = nullptr;
@@ -40,6 +42,8 @@ public:
     GameTime time;
     GameCamera camera;
     GameViewPort viewPort;
+
+    Tilemap* tilemap;
 
     // entity manager
     EntityManager* entityManager;
@@ -73,4 +77,6 @@ public:
         std::cout << "Window size updated to: " << Vec2toString(_windowSize) << std::endl;
         }
     inline glm::ivec2 GetWindowSize() { return _windowSize; }
+
+
 };

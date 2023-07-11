@@ -114,7 +114,6 @@ public:
                 glm::vec2 origScreen = _camera->WorldToScreen(world_pos - transform->GetOrigin());
                 SDL_FRect origRectScreen = SDL_FRect{origScreen.x - 2, origScreen.y - 2, 4, 4};
                 SDL_RenderFillRectF(_renderer, &origRectScreen);
-
             }
         }
     }

@@ -70,6 +70,8 @@ public:
             _tilemapSize.x * _tileSize.x, 
             _tilemapSize.y * _tileSize.y);
 
+        SDL_SetTextureBlendMode(_tilemapTexture, SDL_BLENDMODE_BLEND);
+
         SDL_SetRenderTarget(_renderer, _tilemapTexture);
 
         for (int y = 0; y < _tilemapSize.y; y++) {
