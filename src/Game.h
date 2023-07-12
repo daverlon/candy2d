@@ -9,17 +9,24 @@
 
 #include "GameClasses/EntityManager.h"
 
+// components
 #include "Components/TransformComponent.h"
 #include "Components/SpriteComponent.h"
 #include "Components/AnimatorComponent.h"
 
+#include "Components/TilemapComponent.h"
+
+// systems
 #include "Systems/SpriteSystem.h"
 #include "Systems/AnimatorSystem.h"
 #include "Systems/PlayerSystem.h"
 #include "Systems/EnemyAISystem.h"
 #include "Systems/ColliderSystem.h"
 
-#include "Tilemap/Tilemap.h"
+#include "Systems/TilemapSystem.h"
+
+// scenes
+#include "Scenes/MainScene.h"
 
 class Game {
 private:
@@ -43,8 +50,6 @@ public:
     GameCamera camera;
     GameViewPort viewPort;
 
-    Tilemap* tilemap;
-
     // entity manager
     EntityManager* entityManager;
 
@@ -56,6 +61,8 @@ public:
     EnemyAISystem* enemyAISystem;
 
     ColliderSystem* colliderSystem;
+
+    TilemapSystem* tilemapSystem;
 
 
     void HandleEvents();

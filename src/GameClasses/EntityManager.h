@@ -19,7 +19,11 @@ public:
     }
 
     ~EntityManager() {
-#ifdef SHOWDEBUG
+        RemoveAllEntities();
+    }
+
+    void RemoveAllEntities() {
+        #ifdef SHOWDEBUG
         std::cout << "~EntityManager()" << std::endl;
         std::cout << "[Entity Manager] Clearing entities container..." << std::endl;
 #endif

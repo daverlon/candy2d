@@ -4,12 +4,13 @@
 
 class Component {
 private:
-    bool _active = false;
+    bool _active;
 public:
     Component(bool active = true) :
         _active(active) {
             // std::cout << "    Component()" << std::endl;
         }
+
     virtual ~Component() {
         // std::cout << "    ~Component()" << std::endl;
     };
