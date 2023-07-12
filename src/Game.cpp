@@ -191,7 +191,7 @@ void Game::Init() {
             new AnimatorComponent(new Animation(SDL_Rect{368, 369, 16, 23}, 0.03f, 4)),
             // new HealthComponent(100),
             new EnemyAIComponent(),
-            new ColliderComponent(glm::vec4(3.0f, 3.0f, 10.0f, 10.0f), false, false)
+            new ColliderComponent(glm::vec4(3.0f, 12.0f, 10.0f, 10.0f), false, false)
         );
 
     // crate 288 298 16 22
