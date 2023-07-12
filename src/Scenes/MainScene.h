@@ -57,7 +57,7 @@ public:
         );
 
         // create enemies
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < 3; i++)
             _entityManager->CreateEntity(
                 new TransformComponent(glm::vec2(-300.0f + 25.0f * -i, -100.0f), glm::vec2(8, 19)),
                 new SpriteComponent(SDL_Rect{ 368, 369, 16, 23 }, SPRITE_LAYER_YSORT),
@@ -226,8 +226,6 @@ public:
         //Tilemap* tilemap = new Tilemap(_renderer, &camera, _tileSet, glm::ivec2(0, 0), glm::ivec2(16, 16));
         // tilemap->GenerateTexture(data, tileRects);
 
-        _entityManager->CreateEntity(
-            new TilemapComponent(tileRects, data, glm::ivec2(0, 0), glm::ivec2(16, 16))
-        );
+        _entityManager->AddTilemap(new TilemapComponent(tileRects, data, glm::ivec2(0, 0), glm::ivec2(16, 16)));
     }
 };
