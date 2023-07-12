@@ -3,6 +3,8 @@
 #include "../stdafx.h"
 #include "Entity.h"
 
+#include "../Components/TilemapComponent.h"
+
 #define SHOWDEBUG
 
 
@@ -79,6 +81,12 @@ public:
             _entityComponents[type].insert(entity);
         }
         std::cout << std::endl;
+    }
+
+    void AddTilemap(TilemapComponent* component) {
+        Entity* entity = new Entity();
+        entity->AddComponent(component);
+        AddEntity(entity);
     }
 
     template<typename T>
