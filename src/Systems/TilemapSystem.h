@@ -9,6 +9,10 @@
 
 #include "../Components/TilemapComponent.h"
 
+// todo? :
+// tilemap layers (essentially just rendering over the texture for different layers)
+// tilemap blank spaces (perhaps if the index is -1, it skips, leaving a blank area in between tiles)
+
 class TilemapSystem {
 private:
     SDL_Renderer* _renderer;
@@ -45,7 +49,11 @@ public:
 
     void Render() {
 
-        for (auto& ent : _entityManager->GetEntitiesWithComponent<TilemapComponent>()) {
+        auto ents = _entityManager->GetEntitiesWithComponent<TilemapComponent>();
+        std::reverse(ents.begin(), ents.end());
+        
+        // reverse the list 
+        for (auto& ent : ents) {
             
             auto tilemap = ent->GetComponent<TilemapComponent>();
             if (!tilemap->GetActive())
@@ -95,12 +103,12 @@ public:
         auto tilemapLayout = component->GetTilemapLayout();
 
         // print
-        // for (int j = 0; j < _tilemapSize.y; j++) {
-        //     for (int i = 0; i < _tilemapSize.x; i++) {
-        //         std::cout << tilemapData[j][i] << " ";
-        //     }
-        //     std::cout << std::endl;
-        // }
+        for (int j = 0; j < tilemapSize.y; j++) {
+            for (int i = 0; i < tilemapSize.x; i++) {
+                std::cout << tilemapData[j][i] << " ";
+            }
+            std::cout << std::endl;
+        }
 
 
         component->SetTilemapTexture(SDL_CreateTexture(
@@ -119,9 +127,11 @@ public:
         for (int y = 0; y < tilemapSize.y; y++) {
             for (int x = 0; x < tilemapSize.x; x++) {
 
+                int idx = tilemapData[y][x];
+                if (idx == -1) continue;
+
                 SDL_FRect dst = SDL_FRect{tileSize.x * x, tileSize.y * y, tileSize.x, tileSize.y};
 
-                int idx = tilemapData[y][x];
                 SDL_RenderCopyF(_renderer, _tileSetTexture, &tilemapLayout[idx], &dst);
             }
         }

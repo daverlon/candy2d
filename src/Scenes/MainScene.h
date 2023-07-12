@@ -150,7 +150,7 @@ public:
                     continue;
                 }
 
-                // wall top
+                // wall bottom
                 if (y == gridHeight - 1) {
                     id = 9;
                     data[y][x] = id;
@@ -208,6 +208,18 @@ public:
         data[gridHeight - 1][gridWidth - 1] = 18;
 
         _entityManager->AddTilemap(new TilemapComponent(tileRects, data, glm::ivec2(0, 0), glm::ivec2(16, 16)));
+
+        // extra tilemap (bottom wall additional overlapping tilemap
+        // index 8 top wall very top
+
+        std::vector<std::vector<int>> data2(1, std::vector<int>(gridWidth));
+        // for (int i = 0; i < data.size(); i++) data2[0][i] = -1;
+        std::fill(data2[0].begin(), data2[0].end(), -1);
+        std::fill(data2[0].begin() + 1, data2[0].end() - 1, 8);
+
+        glm::ivec2 coord = glm::ivec2(0, (-gridHeight+2)*16);
+
+        _entityManager->AddTilemap(new TilemapComponent(tileRects, data2, coord, glm::ivec2(16, 16)));
     }
 
     void InitMapColliders() {
