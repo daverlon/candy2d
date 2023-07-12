@@ -38,11 +38,15 @@ public:
     }
 
     void Init() {
+        
         PrepareTilemap();
-        PrepareEntities();
+
+        InitMapColliders();
+
+        InitEntities();
     }
 
-    void PrepareEntities() {
+    void InitEntities() {
         // init entities?
 
         // create player
@@ -89,27 +93,6 @@ public:
             new AnimatorComponent(new Animation(SDL_Rect{16, 380, 32, 36}, 0.2f, 4)),
             new ColliderComponent(glm::vec4(6.0f, 16.f, 20.0f, 14.0f), false, true)
         );
-
-        // map colliders
-        _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(0.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 770, 70), false, true)
-        );
-
-        _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(0.0f, -365.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 770, 32), false, true)
-        );
-
-        _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(19.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 39, 365), false, true)
-        );
-        
-        _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(-748.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 32, 365), false, true)
-        );
     }
 
     void PrepareTilemap() {
@@ -145,7 +128,7 @@ public:
         int cleans[3] = {3, 5, 7};
         int dirtys[4] = {0, 1, 2, 4};
         const int gridWidth = 48;
-        const int gridHeight = 24;
+        const int gridHeight = 32;
 
         // tilemap data
         std::vector<std::vector<int>> data(gridHeight, std::vector<int>(gridWidth));
@@ -200,6 +183,7 @@ public:
                     continue;
                 }
 
+                // floor tiles
                 int idx = rand() % 100;
                 int idx2 = 0;
 
@@ -218,14 +202,34 @@ public:
         }
 
         // corners
-        // y, x
+        // [y][x]
         data[0][0] = 17;
         data[0][gridWidth - 1] = 19;
         data[gridHeight - 1][gridWidth - 1] = 18;
 
-        //Tilemap* tilemap = new Tilemap(_renderer, &camera, _tileSet, glm::ivec2(0, 0), glm::ivec2(16, 16));
-        // tilemap->GenerateTexture(data, tileRects);
-
         _entityManager->AddTilemap(new TilemapComponent(tileRects, data, glm::ivec2(0, 0), glm::ivec2(16, 16)));
+    }
+
+    void InitMapColliders() {
+        // map colliders
+        _entityManager->CreateEntity(
+            new TransformComponent(glm::vec2(0.0f, 0.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 770.0f, 70.0f), false, true)
+        );
+
+        _entityManager->CreateEntity(
+            new TransformComponent(glm::vec2(0.0f, -493.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 770.0f, 32.0f), false, true)
+        );
+
+        _entityManager->CreateEntity(
+            new TransformComponent(glm::vec2(19.0f, 0.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 39.0f, 365.0f + 128.0f), false, true)
+        );
+        
+        _entityManager->CreateEntity(
+            new TransformComponent(glm::vec2(-748.0f, 0.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 32.0f, 365.0f + 128.0f), false, true)
+        );
     }
 };
