@@ -68,11 +68,17 @@ public:
                 if (SDL_HasIntersectionF(&rect1Screen, &rect2Screen)) {
                     // intersection between 2 non-solid objects (triggers)
 
+                    // maybe? :
+                    // should not be here (debug)
+                    // should be in its own system
+
                     // player collision with enemy
                     if (((ent1 == player && ent2->GetComponent<EnemyAIComponent>() != nullptr)) 
                         || (ent2 == player && ent1->GetComponent<EnemyAIComponent>() != nullptr)) {
                         std::cout << "Player damage!" << std::endl;
                     }
+
+                    // ------
 
                     if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) {
                         std::cout << "Trigger collision between " << ent1 << " and " << ent2 << std::endl;
