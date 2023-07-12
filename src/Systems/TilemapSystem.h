@@ -12,17 +12,21 @@
 class TilemapSystem {
 private:
     SDL_Renderer* _renderer;
+    EntityManager* _entityManager;
+
+    SDL_Texture* _tileSetTexture;
+
     GameCamera* _camera;
 
-    EntityManager* _entityManager;
     
     // std::vector<SDL_Texture*> tilemapTextures;
     
 public:
-    TilemapSystem(SDL_Renderer* renderer, GameCamera* camera, EntityManager* entityManager) :
+    TilemapSystem(SDL_Renderer* renderer, EntityManager* entityManager, SDL_Texture* tileSetTexture, GameCamera* camera) :
             _renderer(renderer),
-            _camera(camera),
-            _entityManager(entityManager) 
+            _entityManager(entityManager),
+            _tileSetTexture(tileSetTexture),
+            _camera(camera)
         {
             std::cout << "TilemapSystem() " <<  this << std::endl;
         }
@@ -118,7 +122,7 @@ public:
                 SDL_FRect dst = SDL_FRect{tileSize.x * x, tileSize.y * y, tileSize.x, tileSize.y};
 
                 int idx = tilemapData[y][x];
-                SDL_RenderCopyF(_renderer, tx, &tilemapLayout[idx], &dst);
+                SDL_RenderCopyF(_renderer, _tileSetTexture, &tilemapLayout[idx], &dst);
             }
         }
 

@@ -168,7 +168,7 @@ void Game::Init() {
 
     // init systems
 
-    tilemapSystem = new TilemapSystem(_renderer, &camera, entityManager);
+    tilemapSystem = new TilemapSystem(_renderer, entityManager, _tileSet, &camera);
 
     spriteSystem = new SpriteSystem(_renderer, entityManager, _tileSet, &camera);
     animatorSystem = new AnimatorSystem(entityManager);
