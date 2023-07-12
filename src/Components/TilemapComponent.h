@@ -43,8 +43,10 @@ public:
 
     ~TilemapComponent() {
         std::cout << "        ~TilemapComponent() " << this << std::endl;
-        if (_textureCreated)
+        if (_textureCreated) {
             SDL_DestroyTexture(_tilemapTexture);
+            std::cout << "         Destroyed Tilemap texture. " << std::endl;
+        }
     }
 
     // const SDL_Texture* GetTexture() const { return _tilemapTexture; }
