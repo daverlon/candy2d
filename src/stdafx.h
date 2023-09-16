@@ -18,15 +18,15 @@
 #include <typeinfo>
 
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_ttf.h"
+#include "SDL2/SDL_image.h"
 
 //#define CTFS SDL_CreateTextureFromSurface
 
-#include <glm/glm.hpp>
-#include <glm/vec2.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include "glm/vec2.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 
 enum SPRITE_LAYERS {
