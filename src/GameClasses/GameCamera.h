@@ -47,19 +47,16 @@ public:
     }
 
     inline glm::vec2 WorldToScreen(const glm::vec2 &pos) {
-        glm::vec2 ret = glm::vec2(0.0f,0.0f);
-        // ret += g::viewport.position;
-        ret += GetPosition() + (GetSize() / 2.0f);
-        ret -= pos * (GetZoom() / GetOriginalZoom()); // assuming that pos is the origin
+        glm::vec2 ret = glm::vec2(0.0f, 0.0f);
+        ret += pos - GetPosition() - (GetSize() / 2.0f);
+        ret *= GetZoom() / GetOriginalZoom(); // Scale by the zoom factor
         return ret;
     }
 
     inline glm::vec2 ScreenToWorld(const glm::ivec2 &pos) {
-        glm::vec2 ret = pos;
-        ret -= GetPosition();
-        ret -= (GetSize() / 2.0f);
-        ret *= -1;
-        ret /= GetZoom() / GetOriginalZoom();
+        glm::vec2 ret = glm::vec2(pos);
+        ret /= GetZoom() / GetOriginalZoom(); // Scale by the inverse of the zoom factor
+        ret += (GetSize() / 2.0f) + GetPosition();
         return ret;
     }
 
