@@ -15,9 +15,9 @@
 // grid based collision system
 // assumes the grid (world) starts at 0, 0
 
-#define CELL_SIZE 200
-#define WORLD_WIDTH 800
-#define WORLD_HEIGHT 600
+#define CELL_SIZE 1500
+#define WORLD_WIDTH 1500
+#define WORLD_HEIGHT 1500
 
 class ColliderSystem {
 private:
@@ -107,6 +107,7 @@ public:
                     // Check for collisions between entities in this cell
                     for (size_t i = 0; i < entitiesInCell.size(); ++i) {
                         auto entity1 = entitiesInCell[i];
+
                         auto transform1 = entity1->GetComponent<TransformComponent>();
                         auto collider1 = entity1->GetComponent<ColliderComponent>();
 
@@ -200,7 +201,7 @@ public:
 
     // (debug) render collision bounds
     void Render(SDL_Renderer *renderer) {
-        // return;
+        return;
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
         // render player collision bounds

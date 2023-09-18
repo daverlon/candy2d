@@ -6,7 +6,7 @@
 class TransformComponent : public Component {
 private:
     glm::vec2 _position; // world position
-    glm::vec2 _origin; // world position origin
+    glm::vec2 _origin; // world position origin (offset amount) ie _position + _origin = origin world position 
 public:
     TransformComponent(glm::vec2 position = glm::vec2(0.0f, 0.0f), glm::vec2 origin = glm::vec2(0.0f, 0.0f)) :
         _position(position), _origin(origin) {

@@ -55,7 +55,7 @@ public:
         // wizard_m_run 192 164 16 28 4
         _entityManager->CreateEntity(
             new PlayerComponent(),
-            new TransformComponent(glm::vec2(0.0f, 0.0f), glm::vec2(8.0f, 24.0f)),
+            new TransformComponent(glm::vec2(90.0f, 120.0f), glm::vec2(8.0f, 24.0f)),
             // new TransformComponent(glm::vec2(-384.0f, -190.0f), glm::vec2(8.0f, 24.0f)),
             new SpriteComponent(SDL_Rect{ 192, 164, 16, 28 }),
             new AnimatorComponent(new Animation(SDL_Rect{192, 164, 16, 28}, 0.09f, 4)),
@@ -64,9 +64,9 @@ public:
         );
 
         // create enemies
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 500; i++)
             _entityManager->CreateEntity(
-                new TransformComponent(glm::vec2(185.0f + (100 * (i+1)), 250.0f), glm::vec2(8, 19)),
+                new TransformComponent(glm::vec2(185.0f + (20 * (i+1)), 250.0f), glm::vec2(8, 19)),
                 new SpriteComponent(SDL_Rect{ 368, 369, 16, 23 }, SPRITE_LAYER_YSORT),
                 new AnimatorComponent(new Animation(SDL_Rect{368, 369, 16, 23}, 0.03f, 4)),
                 // new HealthComponent(100),

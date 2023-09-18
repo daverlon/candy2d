@@ -68,7 +68,7 @@ public:
 
                     // may not need this if check, since the transforms are being asserted
                     return (transform1->GetPosition().y + transform1->GetOrigin().y) 
-                        > (transform2->GetPosition().y + transform2->GetOrigin().y);
+                        < (transform2->GetPosition().y + transform2->GetOrigin().y);
 
                     return false;
                 });
@@ -100,20 +100,24 @@ public:
                 SDL_FRect sprite_bounds_screen = SDL_FRect{};
                 _camera->RectWorldToScreen(&sprite_bounds_world, &sprite_bounds_screen);
 
-                // render bounds (debug)
-                SDL_SetRenderDrawColor(_renderer, 255, 0, 255, 255);
-                SDL_RenderDrawRectF(_renderer, &sprite_bounds_screen);
-
                 if (sprite->GetFlipped())
                     SDL_RenderCopyExF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen, sprite->GetAngle(), NULL, SDL_FLIP_HORIZONTAL);
                 else
                     SDL_RenderCopyExF(_renderer, _tileSetTexture, &sprite->GetSrcRect(), &sprite_bounds_screen, sprite->GetAngle(), NULL, SDL_FLIP_NONE);
+
+#ifdef DEBUG
+                // render bounds (debug)
+                SDL_SetRenderDrawColor(_renderer, 255, 0, 255, 255);
+                SDL_RenderDrawRectF(_renderer, &sprite_bounds_screen);
+
+
 
                 // render origin (debug)
                 SDL_SetRenderDrawColor(_renderer, 0, 255, 0, 255);
                 glm::vec2 origScreen = _camera->WorldToScreen(world_pos + transform->GetOrigin());
                 SDL_FRect origRectScreen = SDL_FRect{origScreen.x - 2, origScreen.y - 2, 4, 4};
                 SDL_RenderFillRectF(_renderer, &origRectScreen);
+#endif
             }
         }
     }

@@ -187,7 +187,7 @@ void Game::Update() {
     // update game logic (run systems)
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
-    //enemyAISystem->Update(time.DeltaTime());
+    enemyAISystem->Update(time.DeltaTime());
     colliderSystem->Update(time.DeltaTime());
 }
 
