@@ -80,9 +80,10 @@ public:
     inline void TogglePause() { _paused = !_paused; }
 
     inline void UpdateWindowSize() { 
+        glm::ivec2 s = GetWindowSize();
         SDL_GetWindowSize(_window, &_windowSize.x, &_windowSize.y ); 
-        std::cout << "Window size updated to: " << Vec2toString(_windowSize) << std::endl;
-        }
+        std::cout << Vec2toString(s) << " Window size updated to: " << Vec2toString(_windowSize) << std::endl;
+    }
     inline glm::ivec2 GetWindowSize() { return _windowSize; }
 
 

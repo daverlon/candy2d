@@ -5,7 +5,7 @@
 
 #include "../Components/TilemapComponent.h"
 
-#define SHOWDEBUG
+// #define SHOWDEBUG
 
 
 // chatGPT!
@@ -95,6 +95,7 @@ public:
         auto it = _entityComponents.find(typeid(T));
         if (it != _entityComponents.end()) {
             for (auto entity : it->second) {
+                assert(entity != nullptr);
                 entities.push_back(entity);
             }
         }
@@ -106,6 +107,7 @@ public:
         auto it = _entityComponents.find(typeid(T));
         if (it != _entityComponents.end()) {
             for (auto entity : it->second) {
+                assert(entity != nullptr);
                 return entity;
             }
         }

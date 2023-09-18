@@ -20,19 +20,23 @@ public:
     }
 
     ~Entity() {
+#ifdef SHOWDEBUG
         std::cout << "Started entity destruct" << std::endl;
         std::cout << "~Entity() " << this << std::endl;
         std::cout << "=======" << std::endl;
         std::cout << "Component list size: " << _components.size() << std::endl;
         std::cout << "=======" << std::endl;
+#endif
 
         for (auto c : _components) {
             delete c;
         } 
         _components.clear(); // avoid double delete
+#ifdef SHOWDEBUG
         std::cout << "Component list size: " << _components.size() << std::endl;
         std::cout << "=======" << std::endl;
         std::cout << std::endl;
+#endif
     }
 
 
@@ -61,24 +65,31 @@ public:
     T* GetComponent() const {
         for (auto c : _components) {
             T* t = dynamic_cast<T*>(c);
-            if (t != nullptr) {
+            if (t != nullptr)
+            //assert(t != nullptr);
                 return t;
-            }
         }
         // std::cout << "Error: Tried to access a Component that does not exist." << std::endl;
         return nullptr;
     }
     
     std::vector<Component*> GetComponents() {
+#ifdef SHOWDEBUG
         std::cout << "Getting components for entity " << this << std::endl;
         std::cout << "Component count for entity " << this << ": " << _components.size() << std::endl;
+#endif
         std::vector<Component*> components;
         components.reserve(_components.size());
         for (auto c : _components) {
+            //assert(c != nullptr);
             components.push_back(c);
+#ifdef SHOWDEBUG
             std::cout << "    Found component: " << typeid(*c).name() << std::endl;
+#endif
         }
+#ifdef SHOWDEBUG
         std::cout << std::endl;
+#endif
         return components;
     }
 };

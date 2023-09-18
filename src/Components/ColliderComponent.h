@@ -24,7 +24,7 @@ public:
     }
     
     // inline glm::vec2 GetOffset() { return _offset; }
-    inline glm::vec4 GetBounds() { return _bounds; }
+    const inline glm::vec4 GetBounds() const { return _bounds; }
     inline bool GetIsTrigger() { return _isTrigger; }
     inline bool GetIsUnmoveable() { return _isUnmoveable; }
 };

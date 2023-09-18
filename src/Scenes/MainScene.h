@@ -41,9 +41,11 @@ public:
         
         PrepareTilemap();
 
-        InitMapColliders();
+        // InitMapColliders();
 
         InitEntities();
+
+        // std::cout << "Main scene init completed." << std::endl;
     }
 
     void InitEntities() {
@@ -53,7 +55,8 @@ public:
         // wizard_m_run 192 164 16 28 4
         _entityManager->CreateEntity(
             new PlayerComponent(),
-            new TransformComponent(glm::vec2(-384.0f, -190.0f), glm::vec2(8.0f, 24.0f)),
+            new TransformComponent(glm::vec2(0.0f, 0.0f), glm::vec2(8.0f, 24.0f)),
+            // new TransformComponent(glm::vec2(-384.0f, -190.0f), glm::vec2(8.0f, 24.0f)),
             new SpriteComponent(SDL_Rect{ 192, 164, 16, 28 }),
             new AnimatorComponent(new Animation(SDL_Rect{192, 164, 16, 28}, 0.09f, 4)),
             // new HealthComponent(100),
@@ -61,9 +64,9 @@ public:
         );
 
         // create enemies
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
             _entityManager->CreateEntity(
-                new TransformComponent(glm::vec2(-300.0f + 25.0f * -i, -100.0f), glm::vec2(8, 19)),
+                new TransformComponent(glm::vec2(185.0f + (100 * (i+1)), 250.0f), glm::vec2(8, 19)),
                 new SpriteComponent(SDL_Rect{ 368, 369, 16, 23 }, SPRITE_LAYER_YSORT),
                 new AnimatorComponent(new Animation(SDL_Rect{368, 369, 16, 23}, 0.03f, 4)),
                 // new HealthComponent(100),
@@ -73,14 +76,14 @@ public:
 
         // crate 288 298 16 22
         _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(-400.0f, -150.0f), glm::vec2(8.0f, 19.0f)),
+            new TransformComponent(glm::vec2(200.0f, 200.0f), glm::vec2(8.0f, 19.0f)),
             new SpriteComponent(SDL_Rect{288, 408, 16, 24}),
             new ColliderComponent(glm::vec4(1.0f, 5.0f, 14.0f, 17.0f), false, false)
         );
 
         // chest_empty_open_anim 304 288 16 16 3
         _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(-350.0f, -150.0f), glm::vec2(8.0f, 13.0f)),
+            new TransformComponent(glm::vec2(250.0f, 200.0f), glm::vec2(8.0f, 13.0f)),
             new SpriteComponent(SDL_Rect{304, 400, 16, 16}),
             new AnimatorComponent(new Animation(SDL_Rect{304, 400, 16, 16}, 0.1f, 3)),
             new ColliderComponent(glm::vec4(1.0f, 5.0f, 14.0f, 11.0f), false, true)
@@ -88,7 +91,7 @@ public:
 
         // add idle ogre
         _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(-330.0f, -200.0f), glm::vec2(16.0f, 29.0f)),
+            new TransformComponent(glm::vec2(200.0f, 350.0f), glm::vec2(16.0f, 29.0f)),
             new SpriteComponent(SDL_Rect{16, 380, 32, 36}, SPRITE_LAYER_YSORT),
             new AnimatorComponent(new Animation(SDL_Rect{16, 380, 32, 36}, 0.2f, 4)),
             new ColliderComponent(glm::vec4(6.0f, 16.f, 20.0f, 14.0f), false, true)

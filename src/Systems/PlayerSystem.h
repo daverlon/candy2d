@@ -32,39 +32,44 @@ public:
 
         // handle player movement
         const float ms = 120.0f;
+        // const float ms = 75.0f;
 
-        for (auto& player : _entityManager->GetEntitiesWithComponent<PlayerComponent>()) {
+        auto player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
 
-            auto spr = player->GetComponent<SpriteComponent>();
-            assert(spr != nullptr);
-            // spr->SetAngle(spr->GetAngle()+1); //spin!
+        auto spr = player->GetComponent<SpriteComponent>();
+        //assert(spr != nullptr);
+        // spr->SetAngle(spr->GetAngle()+1); //spin!
 
-            // spr->SetAngle(spr->GetAngle() + 1);
+        // spr->SetAngle(spr->GetAngle() + 1);
 
-            auto transform = player->GetComponent<TransformComponent>();
-            assert(transform != nullptr);
+        auto transform = player->GetComponent<TransformComponent>();
+        // std::cout << Vec2toString(transform->GetPosition()) << std::endl;
+        //assert(transform != nullptr);
 
-            glm::vec2 playerMovement = glm::vec2(
-                keyboardState[SDL_SCANCODE_A] - 
-                keyboardState[SDL_SCANCODE_D],
+        glm::vec2 playerMovement = glm::vec2(
+            keyboardState[SDL_SCANCODE_D] - 
+            keyboardState[SDL_SCANCODE_A],
 
-                keyboardState[SDL_SCANCODE_W] - 
-                keyboardState[SDL_SCANCODE_S]
-            );
+            keyboardState[SDL_SCANCODE_S] - 
+            keyboardState[SDL_SCANCODE_W]
+        );
 
-            if (playerMovement.x < 0 && spr->GetFlipped()) { spr->Flip(); }
-            else if (playerMovement.x > 0 && !spr->GetFlipped()) { spr->Flip(); }
+        if (playerMovement.x < 0 && !spr->GetFlipped()) { spr->Flip(); }
+        else if (playerMovement.x > 0 && spr->GetFlipped()) { spr->Flip(); }
 
-            if (playerMovement.x != 0.0f && playerMovement.y != 0.0f) {
-                playerMovement = glm::normalize(playerMovement);
-            }
-
-            playerMovement *= ms * dt;
-
-            // transform->Translate(playerMovement);
-            transform->MoveSlowly(transform->GetPosition() + playerMovement, 1.0f);
-
-            _camera->MoveSlowly(transform->GetPosition() - glm::vec2(8.0f, 8.0f), 0.3f);
+        if (playerMovement.x != 0.0f && playerMovement.y != 0.0f) {
+            playerMovement = glm::normalize(playerMovement);
         }
+
+        playerMovement *= ms * dt;
+
+        //std::cout << Vec2toString(transform->GetPosition());
+
+        transform->Translate(playerMovement);
+
+        _camera->MoveSlowly(transform->GetPosition() + transform->GetOrigin(), 0.2f);
+        // _camera->SetPosition(glm::vec2(0.0f, 0.0f));
+        // _camera->SetPosition(transform->GetPosition());
+        // std::cout << Vec2toString(_camera->GetPosition()) << std::endl;;
     }
 };

@@ -22,7 +22,7 @@ Game::Game() {
 
     //SDL_SetHint("SDL_RENDER_BATCHING", "1");
 
-    _window = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_RESIZABLE);
+    _window = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_RESIZABLE);
     if (!_window) {
         ShowError("Failed to create SDL_Window.");
         return;
@@ -45,10 +45,10 @@ Game::Game() {
 
     // setup the camera
     camera = GameCamera(
-        glm::vec2(100.0f, 0.0f),
+        glm::vec2(0.0f, 0.0f),
         GetWindowSize(),
         glm::vec2(viewPort.GetPosition() + glm::vec2(GetWindowSize()/2)),
-        5.0f, 15.0f
+        1.0f
     );
 
     SetRunning(true);
@@ -135,12 +135,11 @@ void Game::HandleEvents() {
             break;
         case SDL_MOUSEWHEEL:
             if (ev.wheel.y > 0) {
-                camera.AddZoom(1.0f);
-                std::cout << "Camera:" << camera.GetZoom() << "/" << camera.GetOriginalZoom() << std::endl;
+                camera.AddZoom(0.5f);
             } else if (ev.wheel.y < 0) {
-                camera.AddZoom(-1.0f);
-                std::cout << "Camera:" << camera.GetZoom() << "/" << camera.GetOriginalZoom() << std::endl;
+                camera.AddZoom(-0.5f);
             }
+            std::cout << "Camera Zoom: " << camera.GetZoom() << std::endl;
             break;
         default:
             break;
@@ -188,8 +187,8 @@ void Game::Update() {
     // update game logic (run systems)
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
-    enemyAISystem->Update(time.DeltaTime());
-    colliderSystem->Update();
+    //enemyAISystem->Update(time.DeltaTime());
+    colliderSystem->Update(time.DeltaTime());
 }
 
 /*
@@ -197,7 +196,6 @@ void Game::Update() {
 */
 void Game::Render() {
 
-    // tilemap->Render();
     tilemapSystem->Render();
 
     spriteSystem->Render();
@@ -208,6 +206,20 @@ void Game::Render() {
     SDL_SetRenderDrawColor(_renderer, 0, 255, 255, 255);
     SDL_Rect mouse_rect = SDL_Rect {viewPort.GetMousePosition().x - 2, viewPort.GetMousePosition().y - 2, 4, 4};
     SDL_RenderFillRect(_renderer, &mouse_rect);
+
+    // draw crosshair
+    SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 75);
+    const SDL_Point v_ps[2] = {
+        (SDL_Point){GetWindowSize().x / 2, 0}, 
+        (SDL_Point){GetWindowSize().x / 2, GetWindowSize().y},
+    };
+    const SDL_Point h_ps[2] = {
+        (SDL_Point){0, GetWindowSize().y / 2},
+        (SDL_Point){GetWindowSize().x, GetWindowSize().y / 2}
+    };
+    // std::cout << Vec2toString(GetWindowSize()) << std::endl;
+    SDL_RenderDrawLines(_renderer, v_ps, 2);
+    SDL_RenderDrawLines(_renderer, h_ps, 2);
 }
 
 /*
@@ -232,12 +244,13 @@ void Game::Run() {
         UpdateKeyboardState();
 
         // process game logic
+        // std::cout << "Update" << std::endl;
         if (!_paused)
             Update();
 
         // clear the renderer before copying
         SDL_SetRenderDrawColor(_renderer, 100, 100, 100, 255);
-        // SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
         SDL_RenderClear(_renderer);
         // copy all textures to the buffer
         Render();
