@@ -12,14 +12,51 @@
 
 #include "../Utils/GameMath.h"
 
+// grid based collision system
+// assumes the grid (world) starts at 0, 0
+
+#define CELL_SIZE 200
+#define WORLD_WIDTH 800
+#define WORLD_HEIGHT 600
+
 class ColliderSystem {
 private:
     EntityManager *_entityManager;
     GameCamera *_camera; // for zoom
 
-    // const int grid_width = 10;
-    // const int grid_height = 10;
-    // const float cell_size = 10.0f; // should be the same as the grid width/height (since they are perfect squares) except floating point
+    // int cellKey = static_cast<int>(x / cellSize) + static_cast<int>(y / cellSize) * (worldWidth / cellSize);
+    std::unordered_map<int, std::vector<Entity*>> _cells;
+
+    int CellKey(int x, int y) {
+        return static_cast<int>(x / CELL_SIZE) + static_cast<int>(y / CELL_SIZE) * (WORLD_WIDTH / CELL_SIZE);
+    }
+
+    std::vector<Entity*> GetEntitiesInCell(int x, int y) {
+        if (_cells.find(CellKey(x, y)) != _cells.end())
+            return _cells[CellKey(x, y)];
+        return {};
+    }
+
+    void AddEntityToCell(int x, int y, Entity* entity) {
+        int k = CellKey(x, y);
+
+        if (_cells.find(k) == _cells.end()) {
+            _cells[k] = std::vector<Entity*>();
+        }
+
+        _cells[k].push_back(entity);
+    } 
+
+    void RemoveEntityFromCell(int x, int y, Entity* entity) {
+        int k = CellKey(x, y);
+        if (_cells.find(k) != _cells.end()) {
+            auto& cell = _cells[k];
+            auto it = std::find(cell.begin(), cell.end(), entity);
+            if (it != cell.end()) {
+                cell.erase(it);
+            }
+        }
+    }
 
 public:
     ColliderSystem(EntityManager *entityManager, GameCamera *camera) : 
@@ -34,39 +71,128 @@ public:
     }
 
     void Update(const float &dt) {
-        // Perform collision checks only between potentially colliding entities
 
-        auto es = _entityManager->GetEntitiesWithComponent<ColliderComponent>();
-        int ei = es.size();
-        for (int i = 0; i < ei; ++i) {
-            for (int j = i + 1; j < ei; ++j) {
-                auto entity1 = es[i];
-                auto entity2 = es[j];
+        // Entity* player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
 
-                if (entity1 == entity2) continue;
+        _cells.clear();
 
-                auto collider1 = entity1->GetComponent<ColliderComponent>();
-                auto collider2 = entity2->GetComponent<ColliderComponent>();
+        for (auto entity : _entityManager->GetEntitiesWithComponent<ColliderComponent>()) {
+            auto collider = entity->GetComponent<ColliderComponent>();
+            assert(collider != nullptr);
 
-                // continue;
-                if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) continue;
+            auto transform = entity->GetComponent<TransformComponent>();
+            assert(transform != nullptr);
 
-                auto transform1 = entity1->GetComponent<TransformComponent>();
-                auto transform2 = entity2->GetComponent<TransformComponent>();
+            const glm::vec4& bounds = collider->GetBounds();
+            glm::vec2 colliderPosition = transform->GetPosition();
 
-                auto pos1 = transform1->GetPosition();
-                auto pos2 = transform2->GetPosition();
+            int minX = static_cast<int>((colliderPosition.x + bounds.x) / CELL_SIZE);
+            int minY = static_cast<int>((colliderPosition.y + bounds.y) / CELL_SIZE);
+            int maxX = static_cast<int>((colliderPosition.x + bounds.x + bounds.z) / CELL_SIZE);
+            int maxY = static_cast<int>((colliderPosition.y + bounds.y + bounds.w) / CELL_SIZE);
 
-                auto bounds1 = collider1->GetBounds();
-                auto bounds2 = collider2->GetBounds();
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    AddEntityToCell(x, y, entity);
+                }
+            }
+        }
 
-                auto rect1 = SDL_FRect{pos1.x + bounds1.x, pos1.y + bounds1.y, bounds1.z, bounds1.w};
-                auto rect2 = SDL_FRect{pos2.x + bounds2.x, pos2.y + bounds2.y, bounds2.z, bounds2.w};
+        for (int x = 0; x < WORLD_WIDTH / CELL_SIZE; ++x) {
+            for (int y = 0; y < WORLD_HEIGHT / CELL_SIZE; ++y) {
 
-                if (SDL_HasIntersectionF(&rect1, &rect2)) {
-                    std::cout << entity1 << RectToString(rect1) << 
-                    " <-> " << entity2 << RectToString(rect2) << std::endl;
-      
+                std::vector<Entity*> entitiesInCell = GetEntitiesInCell(x, y);
+
+                if (entitiesInCell.size() > 1) {
+                    // Check for collisions between entities in this cell
+                    for (size_t i = 0; i < entitiesInCell.size(); ++i) {
+                        auto entity1 = entitiesInCell[i];
+                        auto transform1 = entity1->GetComponent<TransformComponent>();
+                        auto collider1 = entity1->GetComponent<ColliderComponent>();
+
+                        for (size_t j = i + 1; j < entitiesInCell.size(); ++j) {
+                            auto entity2 = entitiesInCell[j];
+
+                            if (entity1 == entity2) continue;
+
+                            auto transform2 = entity2->GetComponent<TransformComponent>();
+                            auto collider2 = entity2->GetComponent<ColliderComponent>();
+
+                            auto pos1 = transform1->GetPosition();
+                            auto pos2 = transform2->GetPosition();
+
+                            auto bounds1 = collider1->GetBounds();
+                            auto bounds2 = collider2->GetBounds();
+
+                            auto rect1 = SDL_FRect{pos1.x + bounds1.x, pos1.y + bounds1.y, bounds1.z, bounds1.w};
+                            auto rect2 = SDL_FRect{pos2.x + bounds2.x, pos2.y + bounds2.y, bounds2.z, bounds2.w};
+
+                            // Check for collision between collider1 and collider2
+                            
+                            if (SDL_HasIntersectionF(&rect1, &rect2)) {
+
+                            // std::cout << entity1 << RectToString(rect1) << 
+                            //     " <-> " << entity2 << RectToString(rect2) << std::endl;
+                            // player collision with enemy
+                                // if (((entity1 == player && ent2->GetComponent<EnemyAIComponent>() != nullptr)) 
+                                //     || (ent2 == player && ent1->GetComponent<EnemyAIComponent>() != nullptr)) {
+                                //     std::cout << "Player damage!" << std::endl;
+                                // }
+
+                                if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) {
+                                    std::cout << "Trigger collision between " << entity1 << " and " << entity2 << std::endl;
+                                }
+                                else if (!collider1->GetIsTrigger() && !collider2->GetIsTrigger())
+                                {
+                                    // Calculate the overlap between the rectangles
+                                    float overlapLeft = (rect1.x + rect1.w) - rect2.x;
+                                    float overlapRight = (rect2.x + rect2.w) - rect1.x;
+                                    float overlapTop = (rect1.y + rect1.h) - rect2.y;
+                                    float overlapBottom = (rect2.y + rect2.h) - rect1.y;
+
+                                    // Find the minimum overlap
+                                    float minOverlapX = std::min(overlapLeft, overlapRight);
+                                    float minOverlapY = std::min(overlapTop, overlapBottom);
+
+                                    // Calculate separation vector
+                                    glm::vec2 separation = glm::vec2(0.0f, 0.0f);
+
+                                    if (minOverlapX < minOverlapY)
+                                    {
+                                        // Separate horizontally
+                                        separation.x = overlapLeft < overlapRight ? -minOverlapX : minOverlapX;
+                                    }
+                                    else
+                                    {
+                                        // Separate vertically
+                                        separation.y = overlapTop < overlapBottom ? -minOverlapY : minOverlapY;
+                                    }
+
+                                    // Apply separation to entities' positions
+                                    if (!collider1->GetIsUnmoveable() && !collider2->GetIsUnmoveable())
+                                    {
+                                        // If both entities are movable, adjust the positions of both entities
+                                        glm::vec2 newPos1 = pos1 + separation * 0.5f;
+                                        glm::vec2 newPos2 = pos2 - separation * 0.5f;
+                                        transform1->SetPosition(newPos1);
+                                        transform2->SetPosition(newPos2);
+                                    }
+                                    else if (!collider1->GetIsUnmoveable())
+                                    {
+                                        // If the first entity is movable, adjust the position of the first entity only
+                                        glm::vec2 newPos1 = pos1 + separation;
+                                        transform1->SetPosition(newPos1);                                    
+                                    }
+                                    else if (!collider2->GetIsUnmoveable())
+                                    {
+                                        // If the second entity is movable, adjust the position of the second entity only
+                                        glm::vec2 newPos2 = pos2 - separation;
+                                        transform2->SetPosition(newPos2);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
