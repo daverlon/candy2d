@@ -114,11 +114,14 @@ void Game::HandleEvents() {
                     break;
             }
         case SDL_MOUSEBUTTONDOWN:
-            if (ev.button.button == SDL_BUTTON_LEFT) {
-                std::cout << "Mouse Position: " << Vec2toString(viewPort.GetMousePosition())
-                << ", World Position:" << Vec2toString(camera.ScreenToWorld(viewPort.GetMousePosition())) << std::endl;
-
-                std::cout << "Camera Position: " << Vec2toString(camera.GetPosition()) << std::endl;
+            switch (ev.button.button) {
+                case SDL_BUTTON_LEFT:
+                    std::cout << "Mouse Position: " << Vec2toString(viewPort.GetMousePosition())
+                              << ", World Position:" << Vec2toString(camera.ScreenToWorld(viewPort.GetMousePosition())) << std::endl;
+                    std::cout << "Camera Position: " << Vec2toString(camera.GetPosition()) << std::endl;
+                    break;
+                default:
+                    break;
             }
             break;
         case SDL_KEYDOWN:
@@ -187,7 +190,7 @@ void Game::Update() {
     // update game logic (run systems)
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
-    enemyAISystem->Update(time.DeltaTime());
+    // enemyAISystem->Update(time.DeltaTime());
     colliderSystem->Update(time.DeltaTime());
 }
 
@@ -247,6 +250,10 @@ void Game::Run() {
         // std::cout << "Update" << std::endl;
         if (!_paused)
             Update();
+        else {
+            if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(2))
+                camera.MoveSlowly(camera.ScreenToWorld(viewPort.GetMousePosition()), 0.015f);
+        }
 
         // clear the renderer before copying
         SDL_SetRenderDrawColor(_renderer, 100, 100, 100, 255);
