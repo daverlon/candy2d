@@ -31,7 +31,7 @@ public:
     void Update(const float &dt, const Uint8* keyboardState) {
 
         // handle player movement
-        const float ms = 120.0f;
+        const float ms = 150.0f;
         // const float ms = 75.0f;
 
         auto player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();

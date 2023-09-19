@@ -15,7 +15,7 @@
 // grid based collision system
 // assumes the grid (world) starts at 0, 0
 
-#define CELL_SIZE 15
+#define CELL_SIZE 20
 #define WORLD_WIDTH 1500
 #define WORLD_HEIGHT 1500
 
@@ -24,6 +24,7 @@ private:
     EntityManager *_entityManager;
     GameCamera *_camera; // for debug rendering
 
+public:
     // int cellKey = static_cast<int>(x / cellSize) + static_cast<int>(y / cellSize) * (worldWidth / cellSize);
     std::unordered_map<int, std::vector<Entity*>> _cells;
 
@@ -67,7 +68,6 @@ private:
         }
     }
 
-public:
     ColliderSystem(EntityManager *entityManager, GameCamera *camera) : 
     _entityManager(entityManager), 
     _camera(camera) {
@@ -221,7 +221,7 @@ public:
 
     // (debug) render collision bounds
     void Render(SDL_Renderer *renderer) {
-        // return;
+        return;
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 
@@ -277,7 +277,7 @@ public:
             SDL_RenderDrawLineF(renderer, screen.x, screen.y, screen.x, gridWorldBounds.y);
         }
 
-        #define MAX_ENTITIES 50
+        //#define MAX_ENTITIES 50
 
         // // Iterate over grid cells
         // for (int x = 0; x <= WORLD_WIDTH; x += CELL_SIZE) {

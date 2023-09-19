@@ -5,6 +5,7 @@
 
 #include "../GameClasses/EntityManager.h"
 #include "../GameClasses/GameCamera.h"
+#include "../Systems/ColliderSystem.h"
 
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
@@ -15,10 +16,13 @@
 class EnemyAISystem {
 private:
     EntityManager* _entityManager;
-    
+    ColliderSystem* _colliderSystem;
+
 public:
-    EnemyAISystem(EntityManager* entityManager) : 
-            _entityManager(entityManager)
+    EnemyAISystem(EntityManager* entityManager, ColliderSystem* colliderSystem) : 
+
+            _entityManager(entityManager),
+            _colliderSystem(colliderSystem)
         {
             std::cout << "EnemyAISystem()" <<  this << std::endl;
         }
@@ -27,24 +31,27 @@ public:
         std::cout << "~EnemyAISystem()" << this << std::endl;
     }
 
+
     void Update(const float &dt) {
 
         auto player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
         auto playerTransform = player->GetComponent<TransformComponent>();
 
-        const float moveSpeed = 0.75f;
 
         for (auto& enemy : _entityManager->GetEntitiesWithComponent<EnemyAIComponent>()) {
+
+            auto ms = enemy->GetComponent<EnemyAIComponent>()->GetMoveSpeed();
 
             auto transform = enemy->GetComponent<TransformComponent>();
 
             auto delta = playerTransform->GetPosition() - transform->GetPosition();
 
-            auto movement = delta * moveSpeed * dt;
+            auto movement = glm::normalize(delta) * dt * ms;
 
             transform->Translate(movement);
 
-            // todo: collider component and collision detection to trigger damage taken
         }
     }
+
+    
 };

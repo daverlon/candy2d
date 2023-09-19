@@ -20,7 +20,7 @@ Game::Game() {
         return;
     }
 
-    //SDL_SetHint("SDL_RENDER_BATCHING", "1");
+    // SDL_SetHint("SDL_RENDER_BATCHING", "1");
 
     _window = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_RESIZABLE);
     if (!_window) {
@@ -175,8 +175,9 @@ void Game::Init() {
     spriteSystem = new SpriteSystem(_renderer, entityManager, _tileSet, &camera);
     animatorSystem = new AnimatorSystem(entityManager);
     playerSystem = new PlayerSystem(entityManager, &camera);
-    enemyAISystem = new EnemyAISystem(entityManager);
     colliderSystem = new ColliderSystem(entityManager, &camera);
+
+    enemyAISystem = new EnemyAISystem(entityManager, colliderSystem);
 
     
     MainScene* mainScene = new MainScene(entityManager);
@@ -190,7 +191,7 @@ void Game::Update() {
     // update game logic (run systems)
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
-    // enemyAISystem->Update(time.DeltaTime());
+    enemyAISystem->Update(time.DeltaTime());
     colliderSystem->Update(time.DeltaTime());
 }
 
