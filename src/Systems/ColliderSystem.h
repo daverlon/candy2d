@@ -15,7 +15,7 @@
 // grid based collision system
 // assumes the grid (world) starts at 0, 0
 
-#define CELL_SIZE 35
+#define CELL_SIZE 15
 #define WORLD_WIDTH 1500
 #define WORLD_HEIGHT 1500
 

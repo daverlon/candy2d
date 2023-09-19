@@ -3,6 +3,8 @@
 #include "../stdafx.h"
 #include "BaseComponent.h"
 
+//#define SHOWDEBUG
+
 class Animation {
 private:
     SDL_Rect _startFrame;
@@ -14,7 +16,7 @@ private:
 public:
     Animation(const SDL_Rect& startFrame, float delay, int numFrames) :
         _startFrame(startFrame), _delay(delay), _timer(0.0f), _numFrames(numFrames), _curFrame(0) {
-            std::cout << "        Animation()" << this << std::endl;
+        std::cout << "        Animation()" << this << std::endl;
         }
     ~Animation() {
         std::cout << "        ~Animation() " << this << std::endl;
@@ -51,10 +53,14 @@ public:
     AnimatorComponent(Args&&... args) 
         : _curAnimationIndex(0) {
         (_animations.emplace_back(std::forward<Args>(args)...));
+#ifdef SHOWDEBUG
         std::cout << "    AnimatorComponent()" << std::endl;
+#endif
     }
     ~AnimatorComponent() {
+#ifdef SHOWDEBUG
         std::cout << "    ~AnimatorComponent()" << std::endl;
+#endif
         for (auto a : _animations) {
             delete a;
         }
