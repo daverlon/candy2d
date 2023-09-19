@@ -15,25 +15,34 @@
 // grid based collision system
 // assumes the grid (world) starts at 0, 0
 
-#define CELL_SIZE 1500
+#define CELL_SIZE 35
 #define WORLD_WIDTH 1500
 #define WORLD_HEIGHT 1500
 
 class ColliderSystem {
 private:
     EntityManager *_entityManager;
-    GameCamera *_camera; // for zoom
+    GameCamera *_camera; // for debug rendering
 
     // int cellKey = static_cast<int>(x / cellSize) + static_cast<int>(y / cellSize) * (worldWidth / cellSize);
     std::unordered_map<int, std::vector<Entity*>> _cells;
 
     int CellKey(int x, int y) {
-        return static_cast<int>(x / CELL_SIZE) + static_cast<int>(y / CELL_SIZE) * (WORLD_WIDTH / CELL_SIZE);
+        x = (x >= 0) ? 2 * x : -2 * x - 1;
+        y = (y >= 0) ? 2 * y : -2 * y - 1;
+
+        // Combine x and y into a unique key
+        if (x >= y) {
+            return x * x + x + y;
+        } else {
+            return y * y + x;
+        }
     }
 
     std::vector<Entity*> GetEntitiesInCell(int x, int y) {
         if (_cells.find(CellKey(x, y)) != _cells.end())
             return _cells[CellKey(x, y)];
+        // std::cout << "Invalid cell" << std::endl;
         return {};
     }
 
@@ -73,10 +82,10 @@ public:
     void Update(const float &dt) {
 
         // Entity* player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
-
+    
         _cells.clear();
 
-        for (auto entity : _entityManager->GetEntitiesWithComponent<ColliderComponent>()) {
+        for (auto &entity : _entityManager->GetEntitiesWithComponent<ColliderComponent>()) {
             auto collider = entity->GetComponent<ColliderComponent>();
             assert(collider != nullptr);
 
@@ -84,16 +93,17 @@ public:
             assert(transform != nullptr);
 
             const glm::vec4& bounds = collider->GetBounds();
-            glm::vec2 colliderPosition = transform->GetPosition();
+            glm::vec2 position = transform->GetPosition();
 
-            int minX = static_cast<int>((colliderPosition.x + bounds.x) / CELL_SIZE);
-            int minY = static_cast<int>((colliderPosition.y + bounds.y) / CELL_SIZE);
-            int maxX = static_cast<int>((colliderPosition.x + bounds.x + bounds.z) / CELL_SIZE);
-            int maxY = static_cast<int>((colliderPosition.y + bounds.y + bounds.w) / CELL_SIZE);
+            int minX = static_cast<int>((position.x + bounds.x) / CELL_SIZE);
+            int minY = static_cast<int>((position.y + bounds.y) / CELL_SIZE);
+            int maxX = static_cast<int>((position.x + bounds.x + bounds.z) / CELL_SIZE);
+            int maxY = static_cast<int>((position.y + bounds.y + bounds.w) / CELL_SIZE);
 
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     AddEntityToCell(x, y, entity);
+                    // std::cout << "Adding " << entity << " to cell (" << x << "," << y << "), k: " << CellKey(x, y) << std::endl;
                 }
             }
         }
@@ -102,6 +112,16 @@ public:
             for (int y = 0; y < WORLD_HEIGHT / CELL_SIZE; ++y) {
 
                 std::vector<Entity*> entitiesInCell = GetEntitiesInCell(x, y);
+
+                // int count = entitiesInCell.size();
+                // if (count > 0) {
+                //     std::cout << "(" << x << "," << y << "): " << count << std::endl;
+                //     for (auto &e : entitiesInCell) {
+                //         std::cout << e << std::endl;
+                //     }
+                //     std::cout << std::endl;
+                // }
+
 
                 if (entitiesInCell.size() > 1) {
                     // Check for collisions between entities in this cell
@@ -201,8 +221,9 @@ public:
 
     // (debug) render collision bounds
     void Render(SDL_Renderer *renderer) {
-        return;
+        // return;
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
 
         // render player collision bounds
         Entity *player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
@@ -236,5 +257,45 @@ public:
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderDrawRectF(renderer, &entRectScreen);
         }
+
+        SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); // Adjust the color as needed
+
+        float sx = static_cast<float>(WORLD_WIDTH);
+        float sy = static_cast<float>(WORLD_HEIGHT);
+        auto gridWorldBounds = _camera->WorldToScreen(glm::vec2(sx, sy));
+
+        // Draw horizontal lines
+        for (int y = 0; y <= WORLD_HEIGHT; y += CELL_SIZE)
+        {
+            auto screen = _camera->WorldToScreen(glm::vec2(0.0f, static_cast<float>(y)));
+            SDL_RenderDrawLineF(renderer, screen.x, screen.y, gridWorldBounds.x, screen.y);
+        }
+
+        for (int x = 0; x <= WORLD_WIDTH; x += CELL_SIZE)
+        {
+            auto screen = _camera->WorldToScreen(glm::vec2(static_cast<float>(x), 0.0f));
+            SDL_RenderDrawLineF(renderer, screen.x, screen.y, screen.x, gridWorldBounds.y);
+        }
+
+        #define MAX_ENTITIES 50
+
+        // // Iterate over grid cells
+        // for (int x = 0; x <= WORLD_WIDTH; x += CELL_SIZE) {
+        //     for (int y = 0; y <= WORLD_HEIGHT; y += CELL_SIZE) {
+
+        //         int entityCount = GetEntitiesInCell(x, y).size();
+        //         std::cout << "(" << x << "," << y << "): " << entityCount << std::endl;
+
+        //         Uint8 alpha = 255 - ((entityCount/MAX_ENTITIES) * 255);
+        //         SDL_SetRenderDrawColor(renderer, 0, 0, 0, alpha);
+
+        //         auto size = static_cast<float>(CELL_SIZE);
+        //         SDL_FRect worldCellRect = SDL_FRect{static_cast<float>(x), static_cast<float>(y), size, size};
+        //         SDL_FRect screenCellRect = SDL_FRect{0, 0, 0, 0};
+        //         _camera->RectWorldToScreen(&worldCellRect, &screenCellRect);
+
+        //         SDL_RenderFillRectF(renderer, &screenCellRect);
+        //     }
+        // }
     }
 };

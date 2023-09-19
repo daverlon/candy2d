@@ -64,7 +64,7 @@ public:
         );
 
         // create enemies
-        for (int i = 0; i < 500; i++)
+        for (int i = 0; i < 1000; i++)
             _entityManager->CreateEntity(
                 new TransformComponent(glm::vec2(185.0f + (20 * (i+1)), 250.0f), glm::vec2(8, 19)),
                 new SpriteComponent(SDL_Rect{ 368, 369, 16, 23 }, SPRITE_LAYER_YSORT),

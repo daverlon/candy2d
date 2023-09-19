@@ -22,7 +22,7 @@ Game::Game() {
 
     //SDL_SetHint("SDL_RENDER_BATCHING", "1");
 
-    _window = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_RESIZABLE);
+    _window = SDL_CreateWindow("Game Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_RESIZABLE);
     if (!_window) {
         ShowError("Failed to create SDL_Window.");
         return;
@@ -256,7 +256,7 @@ void Game::Run() {
         Render();
         // present the buffer
         SDL_RenderPresent(_renderer);
-
+  
         // ------------------------- //
         time.UpdateLast(SDL_GetTicks()); 
 
