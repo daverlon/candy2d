@@ -12,6 +12,17 @@
 
 #include "../Utils/GameMath.h"
 
+template<typename ComponentType1, typename ComponentType2>
+bool CheckCollision(Entity* entity1, Entity* entity2) {
+
+    if ((entity1->GetComponent<ComponentType1>() != nullptr && entity2->GetComponent<ComponentType2>() != nullptr)
+        || (entity1->GetComponent<ComponentType2>() != nullptr && entity2->GetComponent<ComponentType1>() != nullptr)) {
+        return true;
+    }
+
+    return false;
+}
+
 // grid based collision system
 // assumes the grid (world) starts at 0, 0
 
@@ -115,16 +126,6 @@ public:
 
                 std::vector<Entity*> entitiesInCell = GetEntitiesInCell(x, y);
 
-                // int count = entitiesInCell.size();
-                // if (count > 0) {
-                //     std::cout << "(" << x << "," << y << "): " << count << std::endl;
-                //     for (auto &e : entitiesInCell) {
-                //         std::cout << e << std::endl;
-                //     }
-                //     std::cout << std::endl;
-                // }
-
-
                 if (entitiesInCell.size() > 1) {
                     // Check for collisions between entities in this cell
                     for (size_t i = 0; i < entitiesInCell.size(); ++i) {
@@ -154,26 +155,10 @@ public:
                             
                             if (SDL_HasIntersectionF(&rect1, &rect2)) {
 
-                            // std::cout << entity1 << RectToString(rect1) << 
-                            //     " <-> " << entity2 << RectToString(rect2) << std::endl;
-                            // player collision with enemy
-                                // if (((entity1 == player && ent2->GetComponent<EnemyAIComponent>() != nullptr)) 
-                                //     || (ent2 == player && ent1->GetComponent<EnemyAIComponent>() != nullptr)) {
-                                //     std::cout << "Player damage!" << std::endl;
-                                // }
+                                  if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) {
 
-                                if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) {
-                                    // std::cout << "Trigger collision between " << entity1 << " and " << entity2 << std::endl;
-                                    if (entity1->GetComponent<SkullBulletComponent>() != nullptr
-                                        && entity2->GetComponent<EnemyAIComponent>() != nullptr) {
-                                        // todo: entity manager? it is not save to remove entities in the collision system
-                                        // perhaps on this collision event, remove the health of both entities or something
-                                        // or flag them to be removed then have an entity manager remove them safely
-                                        entity1->FlagDeletion();
-                                        entity2->FlagDeletion();
-                                    }
-                                    if (entity2->GetComponent<SkullBulletComponent>() != nullptr
-                                        && entity1->GetComponent<EnemyAIComponent>() != nullptr) {
+
+                                    if (CheckCollision<SkullBulletComponent, EnemyAIComponent>(entity1, entity2)) {
                                         entity1->FlagDeletion();
                                         entity2->FlagDeletion();
                                     }
