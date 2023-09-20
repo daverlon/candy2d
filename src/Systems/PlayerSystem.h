@@ -37,7 +37,7 @@ public:
     const float projectileAngleDelta = 30.0f;
     const int projectileCount = 12; // 360
     int rotation = 0;
-    float rotationSpeed = 250.0f;
+    float rotationSpeed = 359.0f;
 
     const float dashCooldown = 0.4f; // seconds
     float dashCooldownTimer = dashCooldown;
@@ -101,7 +101,6 @@ public:
             }
         }
 
-    
 
         // handle player bullets
         {
