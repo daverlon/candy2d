@@ -27,4 +27,5 @@ public:
     const inline glm::vec4 GetBounds() const { return _bounds; }
     inline bool GetIsTrigger() { return _isTrigger; }
     inline bool GetIsUnmoveable() { return _isUnmoveable; }
+    inline void SetTrigger(bool val) { _isTrigger = val; }
 };
