@@ -2,6 +2,7 @@
 
 #include "../stdafx.h"
 #include "../Utils/GameMath.h"
+#include "../Utils/DebugUtils.h"
 
 #include "../GameClasses/EntityManager.h"
 #include "../GameClasses/GameCamera.h"
@@ -12,41 +13,37 @@
 #include "../Components/AnimatorComponent.h"
 #include "../Components/PlayerComponent.h"
 #include "../Components/EnemyAIComponent.h"
+#include "../Components/SkullBulletComponent.h"
 
-class EnemyAISystem {
+class SkullBulletSystem {
 private:
     EntityManager* _entityManager;
 
 public:
-    EnemyAISystem(EntityManager* entityManager) : 
+    SkullBulletSystem(EntityManager* entityManager) : 
 
             _entityManager(entityManager)
         {
             std::cout << "EnemyAISystem()" <<  this << std::endl;
         }
 
-    ~EnemyAISystem() {
+    ~SkullBulletSystem() {
         std::cout << "~EnemyAISystem()" << this << std::endl;
     }
 
 
     void Update(const float &dt) {
 
-        auto player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
-        auto playerTransform = player->GetComponent<TransformComponent>();
+          for (auto& bullet : _entityManager->GetEntitiesWithComponent<SkullBulletComponent>()) {
 
+            auto sc = bullet->GetComponent<SkullBulletComponent>();
+            // std::cout << Vec2toString(sc->GetDirection()) << ", " << sc->GetSpeed() << std::endl;;
 
-        for (auto& enemy : _entityManager->GetEntitiesWithComponent<EnemyAIComponent>()) {
+            auto transform = bullet->GetComponent<TransformComponent>();
 
-            auto ms = enemy->GetComponent<EnemyAIComponent>()->GetMoveSpeed();
-
-            auto transform = enemy->GetComponent<TransformComponent>();
-
-            auto delta = playerTransform->GetPosition() - transform->GetPosition();
-
-            auto movement = glm::normalize(delta) * dt * ms;
-
-            transform->Translate(movement);
+            transform->Translate(
+                sc->GetSpeed() * sc->GetDirection() * dt
+            );
 
         }
     }

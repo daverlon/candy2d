@@ -18,6 +18,8 @@
 #define CELL_SIZE 20
 #define WORLD_WIDTH 1500
 #define WORLD_HEIGHT 1500
+#define WORLD_X -200
+#define WORLD_Y -200
 
 class ColliderSystem {
 private:
@@ -108,8 +110,8 @@ public:
             }
         }
 
-        for (int x = 0; x < WORLD_WIDTH / CELL_SIZE; ++x) {
-            for (int y = 0; y < WORLD_HEIGHT / CELL_SIZE; ++y) {
+        for (int x = WORLD_X; x < WORLD_WIDTH / CELL_SIZE; ++x) {
+            for (int y = WORLD_Y; y < WORLD_HEIGHT / CELL_SIZE; ++y) {
 
                 std::vector<Entity*> entitiesInCell = GetEntitiesInCell(x, y);
 
@@ -161,7 +163,23 @@ public:
                                 // }
 
                                 if (collider1->GetIsTrigger() || collider2->GetIsTrigger()) {
-                                    std::cout << "Trigger collision between " << entity1 << " and " << entity2 << std::endl;
+                                    // std::cout << "Trigger collision between " << entity1 << " and " << entity2 << std::endl;
+                                    if (entity1->GetComponent<SkullBulletComponent>() != nullptr
+                                        && entity2->GetComponent<EnemyAIComponent>() != nullptr) {
+                                        // todo: entity manager? it is not save to remove entities in the collision system
+                                        // perhaps on this collision event, remove the health of both entities or something
+                                        // or flag them to be removed then have an entity manager remove them safely
+                                        _entityManager->RemoveEntity(entity1);
+                                        _entityManager->RemoveEntity(entity2);
+                                        break;
+                                    }
+                                    if (entity2->GetComponent<SkullBulletComponent>() != nullptr
+                                        && entity1->GetComponent<EnemyAIComponent>() != nullptr) {
+                                        _entityManager->RemoveEntity(entity1);
+                                        _entityManager->RemoveEntity(entity2);
+                                        break;
+                                    }
+
                                 }
                                 else if (!collider1->GetIsTrigger() && !collider2->GetIsTrigger())
                                 {
@@ -221,7 +239,7 @@ public:
 
     // (debug) render collision bounds
     void Render(SDL_Renderer *renderer) {
-        return;
+        // return;
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 
@@ -265,15 +283,15 @@ public:
         auto gridWorldBounds = _camera->WorldToScreen(glm::vec2(sx, sy));
 
         // Draw horizontal lines
-        for (int y = 0; y <= WORLD_HEIGHT; y += CELL_SIZE)
+        for (int y = WORLD_Y; y <= WORLD_HEIGHT; y += CELL_SIZE)
         {
-            auto screen = _camera->WorldToScreen(glm::vec2(0.0f, static_cast<float>(y)));
+            auto screen = _camera->WorldToScreen(glm::vec2(WORLD_X, static_cast<float>(y)));
             SDL_RenderDrawLineF(renderer, screen.x, screen.y, gridWorldBounds.x, screen.y);
         }
 
-        for (int x = 0; x <= WORLD_WIDTH; x += CELL_SIZE)
+        for (int x = WORLD_X; x <= WORLD_WIDTH; x += CELL_SIZE)
         {
-            auto screen = _camera->WorldToScreen(glm::vec2(static_cast<float>(x), 0.0f));
+            auto screen = _camera->WorldToScreen(glm::vec2(static_cast<float>(x), WORLD_Y));
             SDL_RenderDrawLineF(renderer, screen.x, screen.y, screen.x, gridWorldBounds.y);
         }
 

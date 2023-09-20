@@ -20,7 +20,7 @@ private:
     SDL_Texture* _tileSetTexture;
     GameCamera* _camera;
 
-   std::map<int, std::vector<Entity*>> _entitiesByLayer;  // Map to store entities grouped by layer
+    std::map<int, std::vector<Entity*>> _entitiesByLayer;  // Map to store entities grouped by layer
     bool _needsLayerUpdate;  // Flag to indicate if the layer grouping needs update
 
 
@@ -43,6 +43,7 @@ public:
 
     void UpdateEntitiesByLayer() {
         _entitiesByLayer.clear();
+
         for (auto& entity : _entityManager->GetEntitiesWithComponent<SpriteComponent>()) {
             SpriteComponent* sprite = entity->GetComponent<SpriteComponent>();
             assert(sprite != nullptr);
@@ -78,9 +79,9 @@ public:
 
     void Render() {
 
-        if (_needsLayerUpdate) {
+        // if (_needsLayerUpdate) {
             UpdateEntitiesByLayer();
-        }
+        // }
 
         YSort();
 

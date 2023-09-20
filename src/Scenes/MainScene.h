@@ -41,7 +41,7 @@ public:
         
         PrepareTilemap();
 
-        // InitMapColliders();
+        InitMapColliders();
 
         InitEntities();
 
@@ -99,7 +99,7 @@ public:
     }
 
     void PrepareTilemap() {
-        std::vector<SDL_Rect> tileRects = {
+        const std::vector<SDL_Rect> tileRects = {
             // floor tiles (0 - 8)
             {16, 64, 16, 16},
             {32, 64, 16, 16},
@@ -227,24 +227,29 @@ public:
 
     void InitMapColliders() {
         // map colliders
+
+        // top
         _entityManager->CreateEntity(
             new TransformComponent(glm::vec2(0.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 770.0f, 70.0f), false, true)
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f * 16.0f, 70.0f), false, true)
         );
 
+        // bottom
         _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(0.0f, -493.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 770.0f, 32.0f), false, true)
+            new TransformComponent(glm::vec2(0.0f, (32.0f * 16.0f) - 16.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f * 16.0f, 48.0f), false, true)
         );
 
+        // left
         _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(19.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 39.0f, 365.0f + 128.0f), false, true)
+            new TransformComponent(glm::vec2(-32.0f, 0.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f, (32.0f * 16.0f) + 32.0f), false, true)
         );
         
+        // right
         _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(-748.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 32.0f, 365.0f + 128.0f), false, true)
+            new TransformComponent(glm::vec2((48.0f * 16.0f) - 16.0f, 0.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f, (32.0f * 16.0f) + 32.0f), false, true)
         );
     }
 };

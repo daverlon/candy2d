@@ -21,6 +21,7 @@
 #include "Systems/AnimatorSystem.h"
 #include "Systems/PlayerSystem.h"
 #include "Systems/EnemyAISystem.h"
+#include "Systems/SkullBulletSystem.h"
 #include "Systems/ColliderSystem.h"
 
 #include "Systems/TilemapSystem.h"
@@ -59,6 +60,7 @@ public:
 
     PlayerSystem* playerSystem;
     EnemyAISystem* enemyAISystem;
+    SkullBulletSystem* skullBulletSystem;
 
     ColliderSystem* colliderSystem;
 

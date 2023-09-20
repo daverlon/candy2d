@@ -115,7 +115,7 @@ void Game::HandleEvents() {
             }
         case SDL_MOUSEBUTTONDOWN:
             switch (ev.button.button) {
-                case SDL_BUTTON_LEFT:
+                case SDL_BUTTON_RIGHT:
                     std::cout << "Mouse Position: " << Vec2toString(viewPort.GetMousePosition())
                               << ", World Position:" << Vec2toString(camera.ScreenToWorld(viewPort.GetMousePosition())) << std::endl;
                     std::cout << "Camera Position: " << Vec2toString(camera.GetPosition()) << std::endl;
@@ -177,7 +177,8 @@ void Game::Init() {
     playerSystem = new PlayerSystem(entityManager, &camera);
     colliderSystem = new ColliderSystem(entityManager, &camera);
 
-    enemyAISystem = new EnemyAISystem(entityManager, colliderSystem);
+    enemyAISystem = new EnemyAISystem(entityManager);
+    skullBulletSystem = new SkullBulletSystem(entityManager);
 
     
     MainScene* mainScene = new MainScene(entityManager);
@@ -191,7 +192,8 @@ void Game::Update() {
     // update game logic (run systems)
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
-    enemyAISystem->Update(time.DeltaTime());
+    // enemyAISystem->Update(time.DeltaTime());
+    skullBulletSystem->Update(time.DeltaTime());
     colliderSystem->Update(time.DeltaTime());
 }
 
@@ -232,6 +234,7 @@ void Game::Render() {
 void Game::Run() {
 
     Init();
+    _paused = true;
 
     // main loop
     while (GetRunning()) {
