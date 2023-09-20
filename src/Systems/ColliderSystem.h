@@ -169,15 +169,13 @@ public:
                                         // todo: entity manager? it is not save to remove entities in the collision system
                                         // perhaps on this collision event, remove the health of both entities or something
                                         // or flag them to be removed then have an entity manager remove them safely
-                                        _entityManager->RemoveEntity(entity1);
-                                        _entityManager->RemoveEntity(entity2);
-                                        break;
+                                        entity1->FlagDeletion();
+                                        entity2->FlagDeletion();
                                     }
                                     if (entity2->GetComponent<SkullBulletComponent>() != nullptr
                                         && entity1->GetComponent<EnemyAIComponent>() != nullptr) {
-                                        _entityManager->RemoveEntity(entity1);
-                                        _entityManager->RemoveEntity(entity2);
-                                        break;
+                                        entity1->FlagDeletion();
+                                        entity2->FlagDeletion();
                                     }
 
                                 }

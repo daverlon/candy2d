@@ -190,6 +190,8 @@ void Game::Init() {
 */
 void Game::Update() {
     // update game logic (run systems)
+    entityManager->DeleteFlaggedEntities();
+
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
     // enemyAISystem->Update(time.DeltaTime());

@@ -53,6 +53,7 @@ public:
 
     // entity manager
     EntityManager* entityManager;
+    
 
     // systems
     SpriteSystem* spriteSystem;

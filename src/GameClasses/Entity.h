@@ -7,6 +7,7 @@
 class Entity {
 private:
     std::vector<Component*> _components;
+    bool _shouldDelete;
 
 public:
     // template<typename... Args>
@@ -15,7 +16,8 @@ public:
     //     AddComponent(new Component(std::forward<Args>(args)...));
     // }
 
-    Entity() {
+    Entity() :
+    _shouldDelete(false) {
         std::cout << "Entity() " << this << std::endl;
     }
 
@@ -39,6 +41,8 @@ public:
 #endif
     }
 
+    void FlagDeletion() { _shouldDelete = true; }
+    bool ShouldDelete() { return _shouldDelete; }
 
     void AddComponent(Component* component) {
         _components.push_back(component);
