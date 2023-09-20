@@ -127,10 +127,13 @@ void Game::HandleEvents() {
         case SDL_KEYDOWN:
             switch (ev.key.keysym.sym) {
             case SDLK_SPACE:
-                TogglePause(); 
+                // TogglePause(); 
                 break;
             case SDLK_ESCAPE:
                 SetRunning(false);
+                break;
+            case SDLK_1:
+                TogglePause();
                 break;
             default:
                 break;
@@ -194,7 +197,7 @@ void Game::Update() {
 
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
-    enemyAISystem->Update(time.DeltaTime());
+    // enemyAISystem->Update(time.DeltaTime());
     skullBulletSystem->Update(time.DeltaTime());
     colliderSystem->Update(time.DeltaTime());
 }
@@ -216,18 +219,18 @@ void Game::Render() {
     SDL_RenderFillRect(_renderer, &mouse_rect);
 
     // draw crosshair
-    SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 75);
-    const SDL_Point v_ps[2] = {
-        (SDL_Point){GetWindowSize().x / 2, 0}, 
-        (SDL_Point){GetWindowSize().x / 2, GetWindowSize().y},
-    };
-    const SDL_Point h_ps[2] = {
-        (SDL_Point){0, GetWindowSize().y / 2},
-        (SDL_Point){GetWindowSize().x, GetWindowSize().y / 2}
-    };
-    // std::cout << Vec2toString(GetWindowSize()) << std::endl;
-    SDL_RenderDrawLines(_renderer, v_ps, 2);
-    SDL_RenderDrawLines(_renderer, h_ps, 2);
+    // SDL_SetRenderDrawColor(_renderer, 255, 0, 0, 75);
+    // const SDL_Point v_ps[2] = {
+    //     (SDL_Point){GetWindowSize().x / 2, 0}, 
+    //     (SDL_Point){GetWindowSize().x / 2, GetWindowSize().y},
+    // };
+    // const SDL_Point h_ps[2] = {
+    //     (SDL_Point){0, GetWindowSize().y / 2},
+    //     (SDL_Point){GetWindowSize().x, GetWindowSize().y / 2}
+    // };
+    // // std::cout << Vec2toString(GetWindowSize()) << std::endl;
+    // SDL_RenderDrawLines(_renderer, v_ps, 2);
+    // SDL_RenderDrawLines(_renderer, h_ps, 2);
 }
 
 /*
@@ -271,21 +274,19 @@ void Game::Run() {
         SDL_RenderPresent(_renderer);
   
         // ------------------------- //
-        time.UpdateLast(SDL_GetTicks()); 
 
         // print stats debug
-        if (!_paused)
-        {
-            static Uint64 cur;
-            const int delay = 60;
-            if (cur >= delay) {
-                std::cout << "Tick: " << SDL_GetTicks64() << ", DT: " << time.DeltaTime() << ", FPS: " << time.FPS() << ", ";
-                std::cout << Vec2toString(viewPort.GetMousePosition())
-                << ", " << Vec2toString(camera.ScreenToWorld(viewPort.GetMousePosition())) << std::endl;
-                std::cout << "SDL_Error: " << SDL_GetError() << std::endl;
-                cur = 0;
-            }
-            else cur++;
+        static Uint64 cur;
+        const int delay = 60;
+        if (cur >= delay) {
+            std::cout << "Tick: " << SDL_GetTicks64() << ", DT: " << time.DeltaTime() << ", FPS: " << time.FPS() << ", ";
+            std::cout << Vec2toString(viewPort.GetMousePosition())
+            << ", " << Vec2toString(camera.ScreenToWorld(viewPort.GetMousePosition())) << std::endl;
+            std::cout << "SDL_Error: " << SDL_GetError() << std::endl;
+            cur = 0;
         }
+        else cur++;
+
+        time.UpdateLast(SDL_GetTicks()); 
     }
 }
