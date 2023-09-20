@@ -12,7 +12,7 @@ private:
 public:
     int TTL; // time to live
 
-    SkullBulletComponent(glm::vec2 direction, float speed) : _direction(direction), _speed(speed), TTL(50) {
+    SkullBulletComponent(glm::vec2 direction, float speed) : _direction(direction), _speed(speed), TTL(100) {
          std::cout << "        SkullBulletComponent()" << this << std::endl;
         }
 
