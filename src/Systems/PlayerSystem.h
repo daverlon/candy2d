@@ -29,18 +29,31 @@ public:
         std::cout << "~SpriteSystem()" << this << std::endl;
     }
 
-    Uint64 bullet_timer = 0; // ticks
-    Uint64 bullet_delay = 30; // ticks
-
     const float ms = 150.0f;
 
+    const float bulletCooldown = 0.05f;
+    float bulletCooldownTimer = bulletCooldown;
     const float projectileSpeed = 250.0f;
+    const float projectileAngleDelta = 30.0f;
+    const int projectileCount = 12; // 360
+    int rotation = 0;
+    float rotationSpeed = 250.0f;
+
+    const float dashCooldown = 0.4f; // seconds
+    float dashCooldownTimer = dashCooldown;
+    glm::vec2 dashVec = glm::vec2(0.0f, 0.0f);
+    const float dashDuration = 0.1f;
+    float dashTimer = 0.0f;
+    bool isDashing = false;
+
+    const float dashPower = 700.0f;
 
     void Update(const float &dt, const Uint8* keyboardState) {
 
         auto player = _entityManager->GetFirstEntityWithComponent<PlayerComponent>();
         auto spr = player->GetComponent<SpriteComponent>();
         auto transform = player->GetComponent<TransformComponent>();
+
         // handle player movement
         {
             glm::vec2 playerMovement = glm::vec2(
@@ -58,55 +71,72 @@ public:
                 playerMovement = glm::normalize(playerMovement);
             }
 
-            playerMovement *= ms * dt;
             //std::cout << Vec2toString(transform->GetPosition());
-            transform->Translate(playerMovement);
-        }
-        _camera->MoveSlowly(transform->GetPosition() + transform->GetOrigin(), 0.2f);
+            transform->Translate(playerMovement * ms * dt);
 
+            _camera->MoveSlowly(transform->GetPosition() + transform->GetOrigin(), 0.2f);
+
+            // dash ----- 
+            if (dashCooldownTimer >= dashCooldown) {
+                if (keyboardState[SDL_SCANCODE_SPACE] && !isDashing) {
+                    dashCooldownTimer = 0.0f; // reset dash cooldown timer
+                    dashTimer = 0.0f; // reset dash duration timer
+                    dashVec = playerMovement * dashPower * dt;
+                    isDashing = true;
+                }
+            }
+            else {
+                // std::cout << dashCooldownTimer << "/" << dashCooldown << std::endl;
+                dashCooldownTimer += dt;
+            }
+
+            if (isDashing) {
+                if (dashTimer <= dashDuration) {
+                    transform->Translate(dashVec);
+                    dashTimer += dt;
+                }
+                else {
+                    isDashing = false;
+                }
+            }
+        }
+
+    
 
         // handle player bullets
         {
-            int mx, my;
-            if (SDL_GetMouseState(&mx, &my) & (SDL_BUTTON_LEFT))
-            {
-
-                if (bullet_timer + bullet_delay <= SDL_GetTicks64())
-                {
-                    bullet_timer = SDL_GetTicks64();
+            if (bulletCooldownTimer >= bulletCooldown) {
+                int mx, my;
+                if (SDL_GetMouseState(&mx, &my) & (SDL_BUTTON_LEFT)) {
+                    rotation += rotationSpeed * dt;
 
                     glm::vec2 direction = -glm::normalize((transform->GetPosition() + transform->GetOrigin()) - _camera->ScreenToWorld(glm::ivec2(mx, my)));
+                    // glm::vec2 direction = -glm::normalize(transform->GetPosition() + transform->GetOrigin());
 
-                    // Calculate the left and right directions at -30 and +30 degrees from the mouse cursor direction
-                    glm::vec2 leftDirection(cos(glm::radians(-30.0f)) * direction.x - sin(glm::radians(-30.0f)) * direction.y,
-                                            sin(glm::radians(-30.0f)) * direction.x + cos(glm::radians(-30.0f)) * direction.y);
-                    glm::vec2 rightDirection(cos(glm::radians(30.0f)) * direction.x - sin(glm::radians(30.0f)) * direction.y,
-                                             sin(glm::radians(30.0f)) * direction.x + cos(glm::radians(30.0f)) * direction.y);
+                    for (int i = -projectileCount/2; i < (projectileCount/2) + 1; i++) {
+                        float angle = i * projectileAngleDelta + (rotation % 361);
+                        // std::cout << angle << std::endl;
 
-                    // Shoot in the direction of the mouse cursor
-                    auto temp = _entityManager->CreateEntity(
-                        new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin() - glm::vec2(8.0f, 8.0f)), glm::vec2(8.0f, 8.0f)),
-                        new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
-                        new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
-                        new SkullBulletComponent(direction, projectileSpeed));
-                    if (direction.x >= 0.0f) temp->GetComponent<SpriteComponent>()->Flip();
+                        glm::vec2 dir(
+                            cos(glm::radians(angle)) * direction.x - sin(glm::radians(angle)) * direction.y, 
+                            sin(glm::radians(angle)) * direction.x + cos(glm::radians(angle)) * direction.y
+                        );
 
-                    // Shoot at -30 degrees from the mouse cursor direction
-                    temp = _entityManager->CreateEntity(
-                        new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin() - glm::vec2(8.0f, 8.0f)), glm::vec2(8.0f, 8.0f)),
-                        new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
-                        new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
-                        new SkullBulletComponent(leftDirection, projectileSpeed));
-                    if (leftDirection.x >= 0.0f) temp->GetComponent<SpriteComponent>()->Flip();
+                        auto temp = _entityManager->CreateEntity(
 
-                    // Shoot at +30 degrees from the mouse cursor direction
-                    temp = _entityManager->CreateEntity(
-                        new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin() - glm::vec2(8.0f, 8.0f)), glm::vec2(8.0f, 8.0f)),
-                        new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
-                        new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
-                        new SkullBulletComponent(rightDirection, projectileSpeed));
-                    if (rightDirection.x >= 0.0f) temp->GetComponent<SpriteComponent>()->Flip();
+                            new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin() - glm::vec2(8.0f, 12.0f)), glm::vec2(8.0f, 8.0f)),
+                            new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
+                            new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
+                            new SkullBulletComponent(dir * 2.0f, projectileSpeed));
+
+                        if (dir.x >= 0.0f) temp->GetComponent<SpriteComponent>()->Flip();
+                    }
+
+                    bulletCooldownTimer = 0.0f;
                 }
+            } 
+            else {
+                bulletCooldownTimer += dt;
             }
         }
     }
