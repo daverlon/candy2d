@@ -89,6 +89,7 @@ public:
                         new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
                         new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
                         new SkullBulletComponent(direction, projectileSpeed));
+                    if (direction.x >= 0.0f) temp->GetComponent<SpriteComponent>()->Flip();
 
                     // Shoot at -30 degrees from the mouse cursor direction
                     temp = _entityManager->CreateEntity(
@@ -96,6 +97,7 @@ public:
                         new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
                         new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
                         new SkullBulletComponent(leftDirection, projectileSpeed));
+                    if (leftDirection.x >= 0.0f) temp->GetComponent<SpriteComponent>()->Flip();
 
                     // Shoot at +30 degrees from the mouse cursor direction
                     temp = _entityManager->CreateEntity(
@@ -103,6 +105,7 @@ public:
                         new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
                         new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
                         new SkullBulletComponent(rightDirection, projectileSpeed));
+                    if (rightDirection.x >= 0.0f) temp->GetComponent<SpriteComponent>()->Flip();
                 }
             }
         }
