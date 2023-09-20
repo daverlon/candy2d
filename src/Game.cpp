@@ -194,7 +194,7 @@ void Game::Update() {
 
     playerSystem->Update(time.DeltaTime(), _keyboardState);
     animatorSystem->Update(time.DeltaTime());
-    // enemyAISystem->Update(time.DeltaTime());
+    enemyAISystem->Update(time.DeltaTime());
     skullBulletSystem->Update(time.DeltaTime());
     colliderSystem->Update(time.DeltaTime());
 }

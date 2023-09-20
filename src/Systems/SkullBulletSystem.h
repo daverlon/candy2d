@@ -37,6 +37,9 @@ public:
           for (auto& bullet : _entityManager->GetEntitiesWithComponent<SkullBulletComponent>()) {
 
             auto sc = bullet->GetComponent<SkullBulletComponent>();
+
+            sc->TTL -= 1;
+            if (sc->TTL <= 0) bullet->FlagDeletion();
             // std::cout << Vec2toString(sc->GetDirection()) << ", " << sc->GetSpeed() << std::endl;;
 
             auto transform = bullet->GetComponent<TransformComponent>();

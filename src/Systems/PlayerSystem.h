@@ -30,9 +30,11 @@ public:
     }
 
     Uint64 bullet_timer = 0; // ticks
-    Uint64 bullet_delay = 350; // ticks
+    Uint64 bullet_delay = 30; // ticks
 
     const float ms = 150.0f;
+
+    const float projectileSpeed = 250.0f;
 
     void Update(const float &dt, const Uint8* keyboardState) {
 
@@ -66,21 +68,41 @@ public:
         // handle player bullets
         {
             int mx, my;
-            if (SDL_GetMouseState(&mx, &my)&(SDL_BUTTON_LEFT)) {
+            if (SDL_GetMouseState(&mx, &my) & (SDL_BUTTON_LEFT))
+            {
 
-                if (bullet_timer + bullet_delay <= SDL_GetTicks64()) {
+                if (bullet_timer + bullet_delay <= SDL_GetTicks64())
+                {
                     bullet_timer = SDL_GetTicks64();
 
-                    std::cout << Vec2toString(glm::ivec2(mx, my)) << std::endl;
                     glm::vec2 direction = -glm::normalize((transform->GetPosition() + transform->GetOrigin()) - _camera->ScreenToWorld(glm::ivec2(mx, my)));
 
+                    // Calculate the left and right directions at -30 and +30 degrees from the mouse cursor direction
+                    glm::vec2 leftDirection(cos(glm::radians(-30.0f)) * direction.x - sin(glm::radians(-30.0f)) * direction.y,
+                                            sin(glm::radians(-30.0f)) * direction.x + cos(glm::radians(-30.0f)) * direction.y);
+                    glm::vec2 rightDirection(cos(glm::radians(30.0f)) * direction.x - sin(glm::radians(30.0f)) * direction.y,
+                                             sin(glm::radians(30.0f)) * direction.x + cos(glm::radians(30.0f)) * direction.y);
+
+                    // Shoot in the direction of the mouse cursor
                     auto temp = _entityManager->CreateEntity(
-                        new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin()), glm::vec2(8.0f, 8.0f)),
+                        new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin() - glm::vec2(8.0f, 8.0f)), glm::vec2(8.0f, 8.0f)),
                         new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
                         new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
-                        new SkullBulletComponent(direction, 100.0f)
-                    );
-                    if (direction.x <= 0) temp->GetComponent<SpriteComponent>()->Flip();
+                        new SkullBulletComponent(direction, projectileSpeed));
+
+                    // Shoot at -30 degrees from the mouse cursor direction
+                    temp = _entityManager->CreateEntity(
+                        new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin() - glm::vec2(8.0f, 8.0f)), glm::vec2(8.0f, 8.0f)),
+                        new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
+                        new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
+                        new SkullBulletComponent(leftDirection, projectileSpeed));
+
+                    // Shoot at +30 degrees from the mouse cursor direction
+                    temp = _entityManager->CreateEntity(
+                        new TransformComponent(glm::vec2(transform->GetPosition() + transform->GetOrigin() - glm::vec2(8.0f, 8.0f)), glm::vec2(8.0f, 8.0f)),
+                        new SpriteComponent(SDL_Rect{288, 432, 16, 16}, SPRITE_LAYER_TOP),
+                        new ColliderComponent(glm::vec4(4.0f, 6.0f, 8.0f, 8.0f), true),
+                        new SkullBulletComponent(rightDirection, projectileSpeed));
                 }
             }
         }

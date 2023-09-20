@@ -15,7 +15,7 @@
 // grid based collision system
 // assumes the grid (world) starts at 0, 0
 
-#define CELL_SIZE 20
+#define CELL_SIZE 15
 #define WORLD_WIDTH 1500
 #define WORLD_HEIGHT 1500
 #define WORLD_X -200
@@ -237,7 +237,7 @@ public:
 
     // (debug) render collision bounds
     void Render(SDL_Renderer *renderer) {
-        // return;
+        return;
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 
