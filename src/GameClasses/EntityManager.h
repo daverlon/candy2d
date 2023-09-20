@@ -167,7 +167,7 @@ public:
         for (auto& componentEntry : _entityComponents) {
 
             // For each component type, access the entities associated with it.
-            const std::type_index& componentType = componentEntry.first;
+            // const std::type_index& componentType = componentEntry.first;
             std::unordered_set<Entity*>& entitiesWithComponent = componentEntry.second;
 
             // Create a list of entities to remove.
