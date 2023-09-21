@@ -61,18 +61,17 @@ Game::Game() {
 Game::~Game() {
     std::cout << "Destroying up game objects..." << std::endl;
 
-    // delete tilemap;
-
-
-    delete tilemapSystem;
-
-    // delete systems
-    delete spriteSystem;
-    delete animatorSystem;
+    // delete game systems
+    delete skullBulletSystem;
     delete enemyAISystem;
     delete playerSystem;
-    delete colliderSystem;
 
+    // delete core systems
+    delete uiRenderSystem;
+    delete animatorSystem;
+    delete colliderSystem;
+    delete spriteSystem;
+    delete tilemapSystem;
 
     delete entityManager;
 
@@ -171,18 +170,18 @@ void Game::Init() {
     // init entity manager
     entityManager = new EntityManager();
 
-    // init systems
-
+    // core systems
     tilemapSystem = new TilemapSystem(_renderer, entityManager, _tileSet, &camera);
-
     spriteSystem = new SpriteSystem(_renderer, entityManager, _tileSet, &camera);
-    animatorSystem = new AnimatorSystem(entityManager);
-    playerSystem = new PlayerSystem(entityManager, &camera);
     colliderSystem = new ColliderSystem(entityManager, &camera);
+    animatorSystem = new AnimatorSystem(entityManager);
+    uiRenderSystem = new UIRenderSystem(_renderer);
 
+
+    // scene systems
+    playerSystem = new PlayerSystem(entityManager, &camera);
     enemyAISystem = new EnemyAISystem(entityManager);
     skullBulletSystem = new SkullBulletSystem(entityManager);
-
     
     MainScene* mainScene = new MainScene(entityManager);
     mainScene->Init();
@@ -195,11 +194,14 @@ void Game::Update() {
     // update game logic (run systems)
     entityManager->DeleteFlaggedEntities();
 
-    playerSystem->Update(time.DeltaTime(), _keyboardState);
+    // core systems
+    colliderSystem->Update(time.DeltaTime());
     animatorSystem->Update(time.DeltaTime());
+
+    // scene systems
+    playerSystem->Update(time.DeltaTime(), _keyboardState);
     enemyAISystem->Update(time.DeltaTime());
     skullBulletSystem->Update(time.DeltaTime());
-    colliderSystem->Update(time.DeltaTime());
 }
 
 /*

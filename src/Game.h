@@ -16,15 +16,18 @@
 
 #include "Components/TilemapComponent.h"
 
-// systems
+// core systems
 #include "Systems/SpriteSystem.h"
 #include "Systems/AnimatorSystem.h"
+#include "Systems/TilemapSystem.h"
+#include "Systems/ColliderSystem.h"
+#include "Systems/UIRenderSystem.h"
+
+// game systems
 #include "Systems/PlayerSystem.h"
 #include "Systems/EnemyAISystem.h"
 #include "Systems/SkullBulletSystem.h"
-#include "Systems/ColliderSystem.h"
 
-#include "Systems/TilemapSystem.h"
 
 // scenes
 #include "Scenes/MainScene.h"
@@ -55,17 +58,18 @@ public:
     EntityManager* entityManager;
     
 
-    // systems
+    // core systems
     SpriteSystem* spriteSystem;
     AnimatorSystem* animatorSystem;
+    TilemapSystem* tilemapSystem;
+    ColliderSystem* colliderSystem;
+    UIRenderSystem* uiRenderSystem;
+
 
     PlayerSystem* playerSystem;
     EnemyAISystem* enemyAISystem;
     SkullBulletSystem* skullBulletSystem;
 
-    ColliderSystem* colliderSystem;
-
-    TilemapSystem* tilemapSystem;
 
 
     void HandleEvents();
