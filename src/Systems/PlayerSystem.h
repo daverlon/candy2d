@@ -29,6 +29,7 @@ public:
         std::cout << "~SpriteSystem()" << this << std::endl;
     }
 
+    const float maxSpeed = 150.0f;
     const float ms = 150.0f;
 
     const float bulletCooldown = 0.05f;
@@ -47,6 +48,7 @@ public:
     bool isDashing = false;
 
     const float dashPower = 700.0f;
+
 
     void Update(const float &dt, const Uint8* keyboardState) {
 
@@ -72,7 +74,12 @@ public:
             }
 
             //std::cout << Vec2toString(transform->GetPosition());
-            transform->Translate(playerMovement * ms * dt);
+            float maxMovement = maxSpeed * dt;
+            glm::vec2 m = playerMovement * ms * dt;
+            if (glm::length(m) > maxMovement) {
+              m = glm::normalize(m) * maxMovement;
+            }
+            transform->Translate(m);
 
             _camera->MoveSlowly(transform->GetPosition() + transform->GetOrigin(), 0.2f);
 
