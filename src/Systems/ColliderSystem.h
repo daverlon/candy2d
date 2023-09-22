@@ -8,6 +8,8 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/EnemyAIComponent.h"
 #include "../Components/PlayerComponent.h"
+#include "../Components/SkullBulletComponent.h"
+
 // #include "../Components/HealthComponent.h"
 
 #include "../Utils/GameMath.h"
@@ -26,7 +28,7 @@ bool CheckCollision(Entity* entity1, Entity* entity2) {
 // grid based collision system
 // assumes the grid (world) starts at 0, 0
 
-#define CELL_SIZE 15
+#define CELL_SIZE 10
 #define WORLD_WIDTH 1500
 #define WORLD_HEIGHT 1500
 #define WORLD_X -200
@@ -159,6 +161,13 @@ public:
 
 
                                     if (CheckCollision<SkullBulletComponent, EnemyAIComponent>(entity1, entity2)) {
+                                        // skull bullets don't get destroyed when they hit enemies
+                                        // {
+                                            // if (entity1->GetComponent<SkullBulletComponent>() == nullptr) 
+                                            //     entity1->FlagDeletion();
+                                            // if (entity2->GetComponent<SkullBulletComponent>() == nullptr) 
+                                            //     entity2->FlagDeletion();
+                                        // }
                                         entity1->FlagDeletion();
                                         entity2->FlagDeletion();
                                     }
