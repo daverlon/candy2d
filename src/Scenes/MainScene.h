@@ -64,7 +64,7 @@ public:
         );
 
         // create enemies
-        for (int i = 0; i < 4000; i++)
+        for (int i = 0; i < 50; i++)
             _entityManager->CreateEntity(
                 new TransformComponent(glm::vec2(700.0f, 450.0f), glm::vec2(8, 19)),
                 new SpriteComponent(SDL_Rect{ 368, 369, 16, 23 }, SPRITE_LAYER_YSORT),
@@ -231,25 +231,25 @@ public:
         // top
         _entityManager->CreateEntity(
             new TransformComponent(glm::vec2(0.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f * 16.0f, 70.0f), false, true)
+            new ColliderComponent(glm::vec4(0.0f, -70.0f, 48.0f * 16.0f, 140.0f), false, true)
         );
 
         // bottom
         _entityManager->CreateEntity(
             new TransformComponent(glm::vec2(0.0f, (32.0f * 16.0f) - 16.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f * 16.0f, 48.0f), false, true)
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f * 16.0f, 48.0f + 70.0f), false, true)
         );
 
         // left
         _entityManager->CreateEntity(
-            new TransformComponent(glm::vec2(-32.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f, (32.0f * 16.0f) + 32.0f), false, true)
+            new TransformComponent(glm::vec2(-32.0f - 70.0f, 0.0f)),
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f + 70.0f, (32.0f * 16.0f) + 32.0f), false, true)
         );
         
         // right
         _entityManager->CreateEntity(
             new TransformComponent(glm::vec2((48.0f * 16.0f) - 16.0f, 0.0f)),
-            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f, (32.0f * 16.0f) + 32.0f), false, true)
+            new ColliderComponent(glm::vec4(0.0f, 0.0f, 48.0f + 70.0f, (32.0f * 16.0f) + 32.0f), false, true)
         );
     }
 };

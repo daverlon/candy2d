@@ -137,7 +137,7 @@ void ColliderSystem::Update(const float &dt) {
 
 // (debug) render collision bounds
 void ColliderSystem::Render(SDL_Renderer *renderer) {
-    return;
+    // return;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 

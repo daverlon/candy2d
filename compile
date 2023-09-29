@@ -5,6 +5,7 @@ echo -------------------
 g++ -std=c++17                              \
 -g -Wall                                    \
 src/*.cpp                                   \
+src/Systems/*.cpp                                   \
 -o bin/game                                 \
 -Idependencies/include                      \
 -Ldependencies/lib                          \
