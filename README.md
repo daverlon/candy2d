@@ -1,5 +1,5 @@
 # candy2d
-<p>This is (hopefully will be) a 2D cross-platform game engine built with SDL2.</p>
+<p>This is a 2D cross-platform game engine built with SDL2.</p>
 <br>
 <p>It is still in very early development. To view the <i>roadmap</i> read todolist.txt!</p>
 <br>
@@ -7,10 +7,9 @@
 <p>
 Goals:
 <ul>
-    <li>Keep the code as easy to read and follow as possible (WIP!)</li>
-    <li>Make developing games EASY! (for myself at least)</li>
+    <li>Keep the code as easy to read and follow as possible</li>
+    <li>Make developing games EASY!</li>
     <li>Impliment a design that closely resembles the ECS (entity component system) structure!</li>
-    <li>Make a cool game using this engine</li>
 </ul>
 </p>
 <br>
